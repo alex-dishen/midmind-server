@@ -13,7 +13,7 @@ A NestJS-based server application using Prisma for migrations management, Redis 
 1. Clone the repository
 
    ```bash
-   https://github.com/alex-dishen/midmind-server.git
+   git clone https://github.com/alex-dishen/midmind-server.git
    ```
 
 2. Install dependencies:
@@ -48,20 +48,13 @@ A NestJS-based server application using Prisma for migrations management, Redis 
    - PostgreSQL (port 55001)
    - Redis (port 6379)
 
-5. Generate Types <br/>
-   To make sure Kysely provides proper TypeScript support, we need to generate types from Prisma schemas:
-
-   ```bash
-   npx prisma generate
-   ```
-
-6. Migrate your running database:
+5. Migrate your running database:
 
    ```bash
    npx prisma migrate dev
    ```
 
-7. Starting the Application
+6. Starting the Application
 
    ```bash
    # Development mode
@@ -83,7 +76,7 @@ A NestJS-based server application using Prisma for migrations management, Redis 
    npx prisma migrate dev
    ```
 
-If you want to first generate the file and take a look at what will be applied during migration you can follow these steps:
+If you want to first generate the file and take a look at what will be applied during migration, you can follow these steps:
 
 1. Make a change in `schema.prisma` file
 
