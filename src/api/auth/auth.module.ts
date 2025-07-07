@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { TokenService } from './token.service';
-import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthRepository } from './auth.repository';
+import { UserModule } from 'src/api/user/user.module';
 import { AuthCookieService } from './auth-cookie.service';
 
 @Module({

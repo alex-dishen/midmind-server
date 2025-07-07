@@ -1,3 +1,99 @@
 # Midmind Server
 
-Will be added a bit later 😉
+A NestJS-based server application using Prisma for migrations management, Redis for caching and Kysely for database management.
+
+## Prerequisites
+
+- Node.js v22.14.0
+
+<br/>
+
+## Project Setup
+
+1. Clone the repository
+
+   ```bash
+   git clone https://github.com/alex-dishen/midmind-server.git
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env` file in the root directory with the following variables:
+
+   ```env
+   NODE_ENV='local'
+
+   PORT=3001
+
+   DATABASE_URL='postgresql://postgres:postgres@localhost:55001/midmind'
+   ACCESS_SECRET=provide your own secret, can be a random string
+   COOKIE_SECRET=provide your own secret, can be a random string
+   REFRESH_SECRET=provide your own secret, can be a random string
+   ACCESS_TOKEN_EXPIRY_TIME=provide your own time like 2h or 30m
+   REFRESH_TOKEN_EXPIRY_TIME=provide your own time like 2h or 30m
+   ```
+
+4. The project uses Docker Compose to run the required services. To start them run the following command in the project directory:
+
+   ```bash
+   docker compose up -d
+   ```
+
+   This will start:
+
+   - PostgreSQL (port 55001)
+   - Redis (port 6379)
+
+5. Migrate your running database:
+
+   ```bash
+   npx prisma migrate dev
+   ```
+
+6. Starting the Application
+
+   ```bash
+   # Development mode
+   npm run start:dev
+
+   # Debug mode
+   npm run start:debug
+   ```
+
+   The application will run pre-checks before starting to ensure all requirements are met.
+
+## Database Migration
+
+1. Make a change in `schema.prisma` file
+
+2. Migrate the db based on your changes
+
+   ```bash
+   npx prisma migrate dev
+   ```
+
+If you want to first generate the file and take a look at what will be applied during migration, you can follow these steps:
+
+1. Make a change in `schema.prisma` file
+
+2. Create a migration file
+
+   ```bash
+   npx prisma migrate dev --create-only
+   ```
+
+3. Migrate the db
+
+   ```bash
+   npx prisma migrate dev
+   ```
+
+## API Documentation
+
+> 💡 API documentation is not available in production
+
+Swagger/OpenAPI documentation can be accessed at `http://localhost:3001/api`
