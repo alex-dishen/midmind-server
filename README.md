@@ -66,6 +66,8 @@ A NestJS-based server application using Prisma for migrations management, Redis 
 
    The application will run pre-checks before starting to ensure all requirements are met.
 
+<br/>
+
 ## Database Migration
 
 1. Make a change in `schema.prisma` file
@@ -91,6 +93,8 @@ If you want to first generate the file and take a look at what will be applied d
    ```bash
    npx prisma migrate dev
    ```
+
+<br/>
 
 ## API Documentation
 
