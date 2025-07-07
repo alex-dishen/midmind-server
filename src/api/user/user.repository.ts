@@ -1,36 +1,41 @@
+import { DatabaseService } from 'src/db/db.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
 import { PaginatedResult, PaginateOptions } from 'src/shared/dtos/pagination.dto';
-import { PrismaService } from 'src/shared/services/prisma/prisma.service';
+import { UserCreateInput, UserGetOutput, UserUpdateInput } from 'src/db/types/db.types';
 
 @Injectable()
 export class UserRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private kysely: DatabaseService) {}
 
-  createUser(data: Prisma.UserCreateInput): Promise<User> {
-    return this.prisma.user.create({ data });
+  async createUser(data: UserCreateInput): Promise<UserGetOutput> {
+    return this.kysely.db
+      .insertInto('users')
+      .values(data)
+      .returningAll()
+      .executeTakeFirstOrThrow(() => new NotFoundException());
   }
 
-  async getUserBy(where: Partial<Prisma.UserWhereInput>): Promise<User> {
-    const user = await this.prisma.user.findFirst({ where });
+  async getUserBy(where: Partial<UserGetOutput>): Promise<UserGetOutput> {
+    let qb = this.kysely.db.selectFrom('users');
 
-    if (!user) throw new NotFoundException();
+    for (const [key, value] of Object.entries(where)) {
+      qb = qb.where(key as keyof UserGetOutput, '=', value);
+    }
 
-    return user;
+    return qb.selectAll().executeTakeFirstOrThrow(() => new NotFoundException());
   }
 
-  getUsersAll({ skip, take }: PaginateOptions): Promise<PaginatedResult<User>> {
-    return this.prisma.paginate(this.prisma.user, { where: {} }, { skip, take });
+  getUsersAll({ skip, take }: PaginateOptions): Promise<PaginatedResult<UserGetOutput>> {
+    const qb = this.kysely.db.selectFrom('users').selectAll();
+
+    return this.kysely.paginate(qb, { take, skip });
   }
 
-  async updateUser(userId: string, data: Prisma.UserUpdateInput): Promise<void> {
-    await this.prisma.user.update({
-      where: { id: userId },
-      data,
-    });
+  async updateUser(userId: string, data: UserUpdateInput): Promise<void> {
+    await this.kysely.db.updateTable('users').set(data).where('id', '=', userId).execute();
   }
 
   async deleteUser(userId: string): Promise<void> {
-    await this.prisma.user.delete({ where: { id: userId } });
+    await this.kysely.db.deleteFrom('users').where('id', '=', userId).execute();
   }
 }

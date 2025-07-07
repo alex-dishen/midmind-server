@@ -1,9 +1,9 @@
 import { hash } from 'argon2';
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from './user.repository';
-import { UserDto, CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { MessageDto } from 'src/shared/dtos/message.dto';
+import { UserRepository } from 'src/api/user/user.repository';
 import { PaginatedResult, PaginationDto } from 'src/shared/dtos/pagination.dto';
+import { CreateUserDto, UpdateUserDto, UserDto } from 'src/api/user/dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -35,12 +35,12 @@ export class UserService {
 
     await this.userRepository.updateUser(userId, dataToUpdate);
 
-    return { message: 'Successfully updated a user' };
+    return { message: 'Successfully updated the user' };
   }
 
-  async deletePublicUser(userId: string): Promise<MessageDto> {
+  async deleteUser(userId: string): Promise<MessageDto> {
     await this.userRepository.deleteUser(userId);
 
-    return { message: 'Successfully deleted a user' };
+    return { message: 'Successfully deleted the user' };
   }
 }
