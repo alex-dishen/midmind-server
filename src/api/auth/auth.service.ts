@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { TokenService } from './token.service';
 import { JwtTokenDecode } from './types/types';
 import { AuthRepository } from './auth.repository';
-import { AuthDto, SingInDto } from './dto/auth.dto';
+import { AuthDto, SignUpDto, SingInDto } from './dto/auth.dto';
 import { MessageDto } from 'src/shared/dtos/message.dto';
 import { UserRepository } from '../user/user.repository';
 import { ForbiddenException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
@@ -18,7 +18,7 @@ export class AuthService {
     private userRepository: UserRepository,
   ) {}
 
-  async logIn(data: SingInDto): Promise<AuthDto> {
+  async signIn(data: SingInDto): Promise<AuthDto> {
     const user = await this.userRepository.getUserBy({ email: data.email });
 
     if (!user) throw new ForbiddenException('Credentials incorrect');
@@ -26,6 +26,19 @@ export class AuthService {
     const passwordsMatch = await verify(user.password, data.password);
 
     if (!passwordsMatch) throw new ForbiddenException('Credentials incorrect');
+
+    const sessionsId = randomUUID();
+
+    const { accessToken, refreshToken, refreshExpiresIn, refreshTokenKey, hashedRefreshToken } =
+      await this.tokenService.createTokens(user.id, sessionsId);
+
+    await this.authRepository.createOrUpdateUserSession(refreshTokenKey, hashedRefreshToken, refreshExpiresIn);
+
+    return { access_token: accessToken, refresh_token: refreshToken };
+  }
+
+  async signUp(data: SignUpDto): Promise<AuthDto> {
+    const user = await this.userRepository.createUser(data);
 
     const sessionsId = randomUUID();
 

@@ -1,5 +1,6 @@
-generator client {
-  provider = "prisma-client-js"
+generator kysely {
+  provider = "ts-node ./src/db/prisma-schema-to-db-types.ts"
+  output   = "../src/db/types/db.types.ts"
 }
 
 datasource db {
@@ -7,17 +8,132 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ChatType {
+  DIRECT // 1-on-1 chat
+  GROUP // Group chat
+}
+
+enum ChatRole {
+  ADMIN // Can add/remove participants, change settings
+  MEMBER // Regular participant
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  AUDIO
+  VIDEO
+  SYSTEM // System messages like "User joined the chat"
+}
+
 model User {
-  id         String    @id @default(uuid())
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email      String   @unique
+  username   String   @unique
   first_name String
   last_name  String
-  email      String    @unique
+  avatar     String?
   password   String
-  created_at DateTime  @default(now())
-  updated_at DateTime?
-  is_deleted Boolean   @default(false)
-  deleted_at DateTime?
-  deleted_by String?
+  is_online  Boolean  @default(false)
+  last_seen  DateTime @default(now())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  sent_messages     Message[]
+  chat_participants ChatParticipant[]
+  reactions         Reaction[]
 
   @@map("users")
+}
+
+model Chat {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String? // null for direct messages
+  type       ChatType @default(DIRECT)
+  avatar     String? // group chat avatar
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Chat settings
+  description String?
+  is_archived Boolean @default(false)
+
+  participants ChatParticipant[]
+  messages     Message[]
+
+  @@map("chats")
+}
+
+model ChatParticipant {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id   String
+  chat_id   String
+  role      ChatRole @default(MEMBER)
+  joined_at DateTime @default(now())
+
+  // Participant settings
+  is_active Boolean @default(true)
+
+  user User @relation(fields: [user_id], references: [id])
+  chat Chat @relation(fields: [chat_id], references: [id])
+
+  @@unique([user_id, chat_id])
+  @@map("chat_participants")
+}
+
+model Message {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content    String
+  type       MessageType @default(TEXT)
+  chat_id    String
+  user_id    String
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+
+  // Message metadata
+  is_edited   Boolean   @default(false)
+  edited_at   DateTime?
+  reply_to_id String?
+
+  // Message status
+  is_deleted Boolean   @default(false)
+  deleted_at DateTime?
+
+  chat        Chat         @relation(fields: [chat_id], references: [id])
+  user        User         @relation(fields: [user_id], references: [id])
+  reply_to    Message?     @relation("MessageReplies", fields: [reply_to_id], references: [id])
+  replies     Message[]    @relation("MessageReplies")
+  attachments Attachment[]
+  reactions   Reaction[]
+
+  @@map("messages")
+}
+
+model Attachment {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  file_name  String
+  file_size  Int
+  mime_type  String
+  url        String
+  message_id String
+  created_at DateTime @default(now())
+
+  message Message @relation(fields: [message_id], references: [id])
+
+  @@map("attachments")
+}
+
+model Reaction {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  emoji      String // 👍, ❤️, 😂, etc.
+  message_id String
+  user_id    String
+  created_at DateTime @default(now())
+
+  message Message @relation(fields: [message_id], references: [id])
+  user    User    @relation(fields: [user_id], references: [id])
+
+  @@unique([message_id, user_id, emoji])
+  @@map("reactions")
 }

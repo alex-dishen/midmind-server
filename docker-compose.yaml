@@ -1,13 +1,13 @@
 services:
-  midmind-postgres:
+  flowtion-postgres:
     image: postgres:17.5
-    container_name: midmind-postgres
+    container_name: flowtion-postgres
     restart: always
     shm_size: 1g
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: midmind
+      POSTGRES_DB: flowtion
     ports:
       - '55001:5432'
     volumes:
@@ -15,7 +15,7 @@ services:
 
   redis:
     image: redis:8.0
-    container_name: midmind-redis
+    container_name: flowtion-redis
     restart: always
     ports:
       - '6379:6379'

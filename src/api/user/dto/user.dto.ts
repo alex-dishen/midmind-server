@@ -1,28 +1,25 @@
-import { IsUUID, IsEmail, IsString, IsBoolean, MaxLength, MinLength, IsOptional, IsStrongPassword } from 'class-validator';
+import { IsEmail, IsString, IsBoolean, IsOptional, IsStrongPassword } from 'class-validator';
 import { Match } from 'src/shared/decorators/match.decorator';
 
 export class UserDto {
-  @IsUUID()
   id: string;
-  first_name: string;
-  last_name: string;
-
-  @IsEmail()
   email: string;
-  password: string;
+  last_seen: Date;
+  username: string;
   created_at: Date;
-  updated_at: Date | null;
-  is_deleted: boolean;
-  deleted_at: Date | null;
-  deleted_by: string | null;
+  updated_at: Date;
+  last_name: string;
+  first_name: string;
+  is_online: boolean;
+  avatar: string | null;
 }
 
 export class CreateUserDto {
   @IsString()
-  first_name: string;
+  username: string;
 
   @IsString()
-  last_name: string;
+  first_name: string;
 
   @IsStrongPassword()
   password: string;
@@ -31,32 +28,49 @@ export class CreateUserDto {
   @Match<CreateUserDto>('password', { message: 'Passwords do not match' })
   confirmation_password: string;
 
+  @IsString()
+  last_name: string;
+
   @IsEmail()
   email: string;
+
+  @IsOptional()
+  @IsString()
+  avatar?: string;
 }
 
 export class UpdateUserDto {
-  @IsString()
-  @MinLength(1)
   @IsOptional()
+  @IsString()
+  username?: string;
+
+  @IsOptional()
+  @IsString()
   first_name?: string;
 
-  @IsString()
-  @MinLength(1)
   @IsOptional()
+  @IsString()
   last_name?: string;
 
-  @IsEmail()
   @IsOptional()
+  @IsEmail()
   email?: string;
 
-  @MinLength(6)
-  @MaxLength(20)
-  @IsString()
-  @IsOptional()
-  password?: string;
+  @IsStrongPassword()
+  password: string;
 
-  @IsBoolean()
+  @IsStrongPassword()
+  @Match<UpdateUserDto>('password', { message: 'Passwords do not match' })
+  confirmation_password: string;
+
   @IsOptional()
-  is_deleted?: boolean;
+  @IsString()
+  avatar?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  is_online?: boolean;
+
+  @IsOptional()
+  last_seen?: Date;
 }
