@@ -67,8 +67,8 @@ model Chat {
 
 model ChatParticipant {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id   String
-  chat_id   String
+  user_id   String   @db.Uuid
+  chat_id   String   @db.Uuid
   role      ChatRole @default(MEMBER)
   joined_at DateTime @default(now())
 
@@ -86,15 +86,15 @@ model Message {
   id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   content    String
   type       MessageType @default(TEXT)
-  chat_id    String
-  user_id    String
+  chat_id    String      @db.Uuid
+  user_id    String      @db.Uuid
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
 
   // Message metadata
   is_edited   Boolean   @default(false)
   edited_at   DateTime?
-  reply_to_id String?
+  reply_to_id String?   @db.Uuid
 
   // Message status
   is_deleted Boolean   @default(false)
@@ -116,7 +116,7 @@ model Attachment {
   file_size  Int
   mime_type  String
   url        String
-  message_id String
+  message_id String   @db.Uuid
   created_at DateTime @default(now())
 
   message Message @relation(fields: [message_id], references: [id])
@@ -127,8 +127,8 @@ model Attachment {
 model Reaction {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   emoji      String // 👍, ❤️, 😂, etc.
-  message_id String
-  user_id    String
+  message_id String   @db.Uuid
+  user_id    String   @db.Uuid
   created_at DateTime @default(now())
 
   message Message @relation(fields: [message_id], references: [id])
