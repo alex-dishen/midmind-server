@@ -28,17 +28,17 @@ enum MessageType {
 }
 
 model User {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email      String   @unique
-  username   String   @unique
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email      String    @unique
+  username   String    @unique
   first_name String
   last_name  String
   avatar     String?
   password   String
-  is_online  Boolean  @default(false)
-  last_seen  DateTime @default(now())
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  is_online  Boolean   @default(false)
+  last_seen  DateTime  @default(now())
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 
   sent_messages     Message[]
   chat_participants ChatParticipant[]
@@ -48,12 +48,12 @@ model User {
 }
 
 model Chat {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name       String? // null for direct messages
-  type       ChatType @default(DIRECT)
+  type       ChatType  @default(DIRECT)
   avatar     String? // group chat avatar
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 
   // Chat settings
   description String?
@@ -89,7 +89,7 @@ model Message {
   chat_id    String      @db.Uuid
   user_id    String      @db.Uuid
   created_at DateTime    @default(now())
-  updated_at DateTime    @updatedAt
+  updated_at DateTime?   @updatedAt
 
   // Message metadata
   is_edited   Boolean   @default(false)

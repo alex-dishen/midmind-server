@@ -19,7 +19,7 @@ CREATE TABLE "users" (
     "is_online" BOOLEAN NOT NULL DEFAULT false,
     "last_seen" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -31,7 +31,7 @@ CREATE TABLE "chats" (
     "type" "ChatType" NOT NULL DEFAULT 'DIRECT',
     "avatar" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
     "description" TEXT,
     "is_archived" BOOLEAN NOT NULL DEFAULT false,
 
@@ -58,7 +58,7 @@ CREATE TABLE "messages" (
     "chat_id" UUID NOT NULL,
     "user_id" UUID NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
     "is_edited" BOOLEAN NOT NULL DEFAULT false,
     "edited_at" TIMESTAMP(3),
     "reply_to_id" UUID,
