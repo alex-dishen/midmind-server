@@ -1,9 +1,19 @@
-import { IsEmail, IsString, IsBoolean, IsOptional, IsStrongPassword } from 'class-validator';
+import { Exclude } from 'class-transformer';
+import { ApiHideProperty } from '@nestjs/swagger';
 import { Match } from 'src/shared/decorators/match.decorator';
+import { IsEmail, IsString, IsBoolean, IsOptional, IsStrongPassword, IsUUID } from 'class-validator';
 
 export class UserDto {
+  @IsUUID()
   id: string;
+
+  @IsEmail()
   email: string;
+
+  @Exclude()
+  @ApiHideProperty()
+  password?: string;
+
   last_seen: Date;
   username: string;
   created_at: Date;

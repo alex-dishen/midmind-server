@@ -1,3 +1,4 @@
+import { plainToClass } from 'class-transformer';
 import { UserService } from 'src/api/user/user.service';
 import { MessageDto } from 'src/shared/dtos/message.dto';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
@@ -17,8 +18,10 @@ export class UserController {
 
   @ApiOperation({ summary: 'Get current user' })
   @Get('/current')
-  getCurrentUser(@GetUser('sub') userId: string): Promise<UserDto> {
-    return this.userService.getUser(userId);
+  async getCurrentUser(@GetUser('sub') userId: string): Promise<UserDto> {
+    const user = await this.userService.getUser(userId);
+
+    return plainToClass(UserDto, user);
   }
 
   @ApiOperation({ summary: 'Update current user' })
@@ -38,14 +41,21 @@ export class UserController {
   @ApiQuery({ name: 'skip', required: false, type: Number })
   @ApiQuery({ name: 'take', required: false, type: Number })
   @Get()
-  getAllUsers(@Query() pagination: PaginationDto): Promise<PaginatedResult<UserDto>> {
-    return this.userService.getAllUsers(pagination);
+  async getAllUsers(@Query() pagination: PaginationDto): Promise<PaginatedResult<UserDto>> {
+    const { meta, data } = await this.userService.getAllUsers(pagination);
+
+    return {
+      data: plainToClass(UserDto, data),
+      meta,
+    };
   }
 
   @ApiOperation({ summary: 'Get a user by id' })
   @Get('/:id')
-  getUserById(@Param('id') id: string): Promise<UserDto> {
-    return this.userService.getUser(id);
+  async getUserById(@Param('id') id: string): Promise<UserDto> {
+    const user = await this.userService.getUser(id);
+
+    return plainToClass(UserDto, user);
   }
 
   @ApiOperation({ summary: 'Update user information' })

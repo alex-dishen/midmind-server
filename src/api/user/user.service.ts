@@ -28,9 +28,13 @@ export class UserService {
   async updateUser(userId: string, data: Partial<UpdateUserDto>): Promise<MessageDto> {
     let dataToUpdate = data;
 
-    if (data.password) {
+    if (data.password && data.confirmation_password) {
       const hashedPassword = await hash(data.password);
-      dataToUpdate = { ...data, password: hashedPassword };
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { confirmation_password, ...updatedData } = { ...data, password: hashedPassword };
+
+      dataToUpdate = { ...updatedData, password: hashedPassword };
     }
 
     await this.userRepository.updateUser(userId, dataToUpdate);
