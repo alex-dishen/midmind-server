@@ -5,9 +5,18 @@ import { RedisModule } from './redis/redis.module';
 import { AuthModule } from './api/auth/auth.module';
 import { UserModule } from './api/user/user.module';
 import { AppConfigModule } from './shared/services/config-service/config.module';
+import { ChatModule } from './api/chat/chat.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AppConfigModule, DatabaseModule, RedisModule, AuthModule, UserModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    AppConfigModule,
+    DatabaseModule,
+    RedisModule,
+    AuthModule,
+    UserModule,
+    ChatModule,
+  ],
   controllers: [],
   providers: [],
   exports: [],
