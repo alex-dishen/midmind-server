@@ -1,12 +1,12 @@
-import { verify } from 'argon2';
 import { randomUUID } from 'crypto';
+import { verify, hash } from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { TokenService } from './token.service';
 import { JwtTokenDecode } from './types/types';
 import { AuthRepository } from './auth.repository';
-import { AuthDto, SignUpDto, SingInDto } from './dto/auth.dto';
 import { MessageDto } from 'src/shared/dtos/message.dto';
 import { UserRepository } from '../user/user.repository';
+import { AuthDto, SignUpDto, SingInDto } from './dto/auth.dto';
 import { ForbiddenException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
@@ -38,7 +38,11 @@ export class AuthService {
   }
 
   async signUp(data: SignUpDto): Promise<AuthDto> {
-    const user = await this.userRepository.createUser(data);
+    const hashedPassword = await hash(data.password);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { confirmation_password, ...updatedData } = { ...data, password: hashedPassword };
+
+    const user = await this.userRepository.createUser(updatedData);
 
     const sessionsId = randomUUID();
 

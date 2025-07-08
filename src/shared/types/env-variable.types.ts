@@ -8,11 +8,11 @@ declare global {
 
 export interface EnvVariableT {
   PORT: number;
+  REDIS_URL: string;
   DATABASE_URL: string;
   ACCESS_SECRET: string;
   COOKIE_SECRET: string;
   REFRESH_SECRET: string;
-  MIGRATE_TENANTS: boolean;
   ACCESS_TOKEN_EXPIRY_TIME: string;
   REFRESH_TOKEN_EXPIRY_TIME: string;
   NODE_ENV: 'local' | 'dev' | 'stage' | 'prod';
