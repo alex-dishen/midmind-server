@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
-import { MessageService } from './message.service';
-import { AppMessageDto, CreateMessageDto, UpdateMessageDto } from './dto/message.dto';
 import { MessageDto } from 'src/shared/dtos/message.dto';
-import { ApiPaginatedResponse } from 'src/shared/decorators/api-pagination-response.decorator';
+import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
+import { AppMessageDto } from 'src/api/chat/messages/dto/message.dto';
+import { MessageService } from 'src/api/chat/messages/message.service';
 import { PaginatedResult, PaginationDto } from 'src/shared/dtos/pagination.dto';
+import { CreateMessageDto } from 'src/api/chat/messages/dto/create-message.dto';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiPaginatedResponse } from 'src/shared/decorators/api-pagination-response.decorator';
 
 @ApiTags('Messages')
 @ApiBearerAuth()
@@ -30,17 +31,5 @@ export class MessageController {
     @Query() pagination: PaginationDto,
   ): Promise<PaginatedResult<AppMessageDto>> {
     return this.messageService.getChatMessages(chatId, pagination);
-  }
-
-  @ApiOperation({ summary: 'Edit a message content' })
-  @Patch('/messages/:id')
-  async editMessageContent(@Param('id') messageId: string, @Body() data: UpdateMessageDto): Promise<MessageDto> {
-    return this.messageService.editMessageContent(messageId, data);
-  }
-
-  @ApiOperation({ summary: 'Soft delete a message' })
-  @Delete('/messages/:id')
-  async deleteMessage(@Param('id') messageId: string): Promise<MessageDto> {
-    return this.messageService.softDeleteMessage(messageId);
   }
 }

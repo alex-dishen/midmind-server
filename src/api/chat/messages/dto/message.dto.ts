@@ -1,7 +1,11 @@
 import { MessageType } from 'src/db/types/db.types';
+import { IsUUID } from 'class-validator';
 
-export type GetChatMessagesOutput = {
+// The name is not MessageDto as there is already general MessageDto class
+export class AppMessageDto {
+  @IsUUID()
   id: string;
+
   content: string;
   user_id: string;
   edited_at: Date;
@@ -9,5 +13,4 @@ export type GetChatMessagesOutput = {
   updated_at: Date;
   type: MessageType;
   is_edited: boolean;
-  reply_to_id: string | null;
-};
+}

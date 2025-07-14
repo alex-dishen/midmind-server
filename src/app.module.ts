@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseModule } from './db/db.module';
+import { DatabaseModule } from 'src/db/db.module';
 import { RedisModule } from './redis/redis.module';
-import { AuthModule } from './api/auth/auth.module';
-import { UserModule } from './api/user/user.module';
-import { AppConfigModule } from './shared/services/config-service/config.module';
-import { ChatModule } from './api/chat/chat.module';
-import { MessageModule } from './api/message/message.module';
+import { AuthModule } from 'src/api/auth/auth.module';
+import { UserModule } from 'src/api/user/user.module';
+import { ChatModule } from 'src/api/chat/chat.module';
+import { AppConfigModule } from 'src/shared/services/config-service/config.module';
 
 @Module({
   imports: [
@@ -17,7 +16,6 @@ import { MessageModule } from './api/message/message.module';
     AuthModule,
     UserModule,
     ChatModule,
-    MessageModule,
   ],
   controllers: [],
   providers: [],

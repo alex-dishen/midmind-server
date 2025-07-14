@@ -14,13 +14,11 @@ export class UserDto {
   @ApiHideProperty()
   password?: string;
 
-  last_seen: Date;
   username: string;
   created_at: Date;
   updated_at: Date;
   last_name: string;
   first_name: string;
-  is_online: boolean;
   avatar: string | null;
 }
 

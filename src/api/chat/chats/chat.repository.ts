@@ -1,6 +1,5 @@
 import { DatabaseService } from 'src/db/db.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PaginatedResult, PaginateOptions } from 'src/shared/dtos/pagination.dto';
 import { ChatCreateInput, ChatGetOutput, ChatUpdateInput } from 'src/db/types/db.types';
 
 @Injectable()
@@ -13,16 +12,6 @@ export class ChatRepository {
       .values(data)
       .returningAll()
       .executeTakeFirstOrThrow(() => new NotFoundException());
-  }
-
-  getUserChats(userId: string, pagination: PaginateOptions): Promise<PaginatedResult<ChatGetOutput>> {
-    const qb = this.kysely.db
-      .selectFrom('chats as c')
-      .innerJoin('chat_participants as cp', 'c.id', 'cp.chat_id')
-      .selectAll('c')
-      .where('cp.user_id', '=', userId);
-
-    return this.kysely.paginate(qb, pagination);
   }
 
   getChatById(chatId: string): Promise<ChatGetOutput> {
