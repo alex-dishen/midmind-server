@@ -6,6 +6,7 @@ import { AuthModule } from 'src/api/auth/auth.module';
 import { UserModule } from 'src/api/user/user.module';
 import { ChatModule } from 'src/api/chat/chat.module';
 import { AppConfigModule } from 'src/shared/services/config-service/config.module';
+import { LLMModule } from 'src/llm/llm.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AppConfigModule } from 'src/shared/services/config-service/config.modul
     AuthModule,
     UserModule,
     ChatModule,
+    LLMModule,
   ],
   controllers: [],
   providers: [],

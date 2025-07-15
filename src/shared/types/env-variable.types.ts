@@ -13,6 +13,7 @@ export interface EnvVariableT {
   ACCESS_SECRET: string;
   COOKIE_SECRET: string;
   REFRESH_SECRET: string;
+  GEMINI_API_KEY: string;
   ACCESS_TOKEN_EXPIRY_TIME: string;
   REFRESH_TOKEN_EXPIRY_TIME: string;
   NODE_ENV: 'local' | 'dev' | 'stage' | 'prod';
