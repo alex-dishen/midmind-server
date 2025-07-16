@@ -6,6 +6,10 @@ import { ChatCreateInput, ChatGetOutput, ChatUpdateInput } from 'src/db/types/db
 export class ChatRepository {
   constructor(private kysely: DatabaseService) {}
 
+  getChatsByUserId(userId: string): Promise<ChatGetOutput[]> {
+    return this.kysely.db.selectFrom('chats').where('user_id', '=', userId).selectAll().execute();
+  }
+
   createChat(data: ChatCreateInput): Promise<ChatGetOutput> {
     return this.kysely.db
       .insertInto('chats')

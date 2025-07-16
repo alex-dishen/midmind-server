@@ -7,6 +7,11 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 @Injectable()
 export class ChatService {
   constructor(private chatRepository: ChatRepository) {}
+
+  async getUserChats(userId: string): Promise<ChatDto[]> {
+    return this.chatRepository.getChatsByUserId(userId);
+  }
+
   async getChatById(chatId: string): Promise<ChatDto> {
     return this.chatRepository.getChatById(chatId);
   }

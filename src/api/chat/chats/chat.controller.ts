@@ -5,6 +5,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ChatDto } from 'src/api/chat/chats/dto/chat.dto';
 import { Body, Controller, Delete, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { GetUser } from 'src/shared/decorators/get-user.decorator';
 
 @ApiTags('Chats')
 @ApiBearerAuth()
@@ -12,6 +13,12 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 @Controller('chats')
 export class ChatController {
   constructor(private chatService: ChatService) {}
+
+  @ApiOperation({ summary: 'Get all user chats' })
+  @Get()
+  async getUserChats(@GetUser('sub') userId: string): Promise<ChatDto[]> {
+    return this.chatService.getUserChats(userId);
+  }
 
   @ApiOperation({ summary: 'Get chat details' })
   @Get('/:id')
