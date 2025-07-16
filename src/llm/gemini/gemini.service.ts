@@ -13,7 +13,14 @@ export class GeminiService {
 
   async generateResponse(data: GeminiRequestDto) {
     try {
-      return this.gemini.models.generateContent({ model: data.model, contents: data.message });
+      const response = await this.gemini.models.generateContentStream({ model: data.model, contents: data.message });
+
+      for await (const chunk of response) {
+        // eslint-disable-next-line no-console
+        console.log(chunk.text);
+      }
+
+      // return response.return()
     } catch (e) {
       console.error(e);
       throw e;

@@ -9,8 +9,8 @@ export class GeminiController {
 
   @Post('/chat')
   async chat(@Body() data: GeminiRequestDto): Promise<MessageDto> {
-    const response = await this.geminiService.generateResponse(data);
+    await this.geminiService.generateResponse(data);
 
-    return { message: response.text || "Gemini didn't give any response" };
+    return { message: "Gemini didn't give any response" };
   }
 }
