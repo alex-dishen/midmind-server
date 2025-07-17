@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { Injectable } from '@nestjs/common';
-import { GeminiRequestDto } from 'src/llm/gemini/dto/geimi-request.dto';
+import { GeminiRequestDto } from 'src/llm/gemini/dto/gemini-request.dto';
 
 @Injectable()
 export class GeminiService {
@@ -15,12 +15,7 @@ export class GeminiService {
     try {
       const response = await this.gemini.models.generateContentStream({ model: data.model, contents: data.message });
 
-      for await (const chunk of response) {
-        // eslint-disable-next-line no-console
-        console.log(chunk.text);
-      }
-
-      // return response.return()
+      return response;
     } catch (e) {
       console.error(e);
       throw e;

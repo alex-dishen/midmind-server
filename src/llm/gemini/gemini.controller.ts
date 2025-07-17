@@ -1,16 +1,30 @@
-import { GeminiService } from './gemini.service';
-import { Controller, Post, Body } from '@nestjs/common';
-import { MessageDto } from 'src/shared/dtos/message.dto';
-import { GeminiRequestDto } from 'src/llm/gemini/dto/geimi-request.dto';
+import { Response } from 'express';
+import { ApiResponse } from '@nestjs/swagger';
+import { Controller, Post, Body, Res } from '@nestjs/common';
+import { GeminiService } from 'src/llm/gemini/gemini.service';
+import { GeminiRequestDto } from 'src/llm/gemini/dto/gemini-request.dto';
+import { GeminiStreamChunkDto } from 'src/llm/gemini/dto/gemini-response.dto';
 
 @Controller('gemini')
 export class GeminiController {
   constructor(private readonly geminiService: GeminiService) {}
 
   @Post('/chat')
-  async chat(@Body() data: GeminiRequestDto): Promise<MessageDto> {
-    await this.geminiService.generateResponse(data);
+  @ApiResponse({ status: 200, type: GeminiStreamChunkDto })
+  async chat(@Body() data: GeminiRequestDto, @Res() res: Response) {
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+    });
 
-    return { message: "Gemini didn't give any response" };
+    const response = await this.geminiService.generateResponse(data);
+
+    for await (const chunk of response) {
+      res.write(`data: ${JSON.stringify({ content: chunk.text })}\n\n`);
+    }
+
+    res.end();
   }
 }
