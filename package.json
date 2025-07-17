@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "nest build",
-    "start": "npm run pre-checks && nest start",
+    "start": "nest start",
     "start:dev": "npm run pre-checks && nest start --watch",
     "start:debug": "npm run pre-checks && nest start --debug --watch",
     "tsc": "tsc",

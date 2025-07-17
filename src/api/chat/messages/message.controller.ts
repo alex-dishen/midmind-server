@@ -25,7 +25,7 @@ export class MessageController {
   @ApiPaginatedResponse(MessageDto)
   @ApiQuery({ name: 'skip', required: false, type: Number })
   @ApiQuery({ name: 'take', required: false, type: Number })
-  @Get('/chats/id/messages')
+  @Get('/chats/:id/messages')
   async getChatMessages(
     @Param('id') chatId: string,
     @Query() pagination: PaginationDto,

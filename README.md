@@ -1,5 +1,11 @@
 # Midmind Server
 
+## 🚨 The most important information
+
+- pre-checks for the script `start` is turned off for the sake of hosting on railway
+
+<br/>
+
 A NestJS-based server application using Prisma for migrations management, Redis for caching and Kysely for database management.
 
 ## Prerequisites
