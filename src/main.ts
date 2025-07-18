@@ -11,6 +11,10 @@ async function bootstrap() {
 
   const nodeEnv = config.get('NODE_ENV');
 
+  app.enableCors({
+    origin: config.get('CORS_ORIGIN'),
+  });
+
   if (nodeEnv !== 'prod') {
     const config = new DocumentBuilder().setTitle('Midmind API').setVersion('1.0').addBearerAuth().build();
     const documentFactory = () => SwaggerModule.createDocument(app, config);

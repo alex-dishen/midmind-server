@@ -35,12 +35,14 @@ A NestJS-based server application using Prisma for migrations management, Redis 
 
    PORT=3001
 
-   REDIS_URL: redis://localhost:6379
+   REDIS_URL= redis://localhost:6379
    DATABASE_URL=postgresql://postgres:postgres@localhost:55001/midmind
 
-   ACCESS_SECRET=provide your own secret, can be a random string
+   ACCESS_TOKEN_SECRET=provide your own secret, can be a random string
    COOKIE_SECRET=provide your own secret, can be a random string
-   REFRESH_SECRET=provide your own secret, can be a random string
+   REFRESH_TOKEN_SECRET=provide your own secret, can be a random string
+
+   CORS_ORIGIN=...
 
    ACCESS_TOKEN_EXPIRY_TIME=provide your own time like 2h or 30m
    REFRESH_TOKEN_EXPIRY_TIME=provide your own time like 2h or 30m
