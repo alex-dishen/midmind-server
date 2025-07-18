@@ -7,7 +7,18 @@ export const validateEnv = (config: Record<string, unknown>) => {
   const errors = validateSync(validatedConfig, { skipMissingProperties: false });
 
   if (errors.length > 0) {
-    throw new Error(errors.toString());
+    const errorMessages = errors
+      .map(error => {
+        const constraints = error.constraints
+          ? Object.values(error.constraints)
+              .map(msg => msg.replace(new RegExp(`^${error.property}\\s*`), '').trim())
+              .join(', ')
+          : '';
+
+        return `- ${error.property}: ${constraints}`;
+      })
+      .join('\n');
+    throw new Error(`Environment variables validation failed:\n${errorMessages}\n`);
   }
 
   return validatedConfig;
