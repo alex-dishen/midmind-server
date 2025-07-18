@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EnvVariableT } from 'src/shared/types/env-variable.types';
+import { EnvironmentVariables } from 'src/shared/services/config-service/env-variables/env-schema';
 
 @Injectable()
 export class AppConfigService {
-  constructor(private configService: ConfigService<EnvVariableT>) {}
+  constructor(private configService: ConfigService<EnvironmentVariables>) {}
 
-  get<K extends keyof EnvVariableT>(key: K): EnvVariableT[K] {
+  get<K extends keyof EnvironmentVariables>(key: K): EnvironmentVariables[K] {
     return this.configService.getOrThrow(key, { infer: true });
   }
 
-  set<K extends keyof EnvVariableT>(key: K, value: EnvVariableT[K]): void {
+  set<K extends keyof EnvironmentVariables>(key: K, value: EnvironmentVariables[K]): void {
     this.configService.set(key, value);
   }
 }

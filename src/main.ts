@@ -3,7 +3,8 @@ import cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppConfigService } from './shared/services/config-service/config.service';
+import { AppConfigService } from 'src/shared/services/config-service/config.service';
+import { NodeEnvironment } from 'src/shared/services/config-service/env-variables/env-schema';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,7 +16,7 @@ async function bootstrap() {
     origin: config.get('CORS_ORIGIN'),
   });
 
-  if (nodeEnv !== 'prod') {
+  if (nodeEnv !== NodeEnvironment.Production) {
     const config = new DocumentBuilder().setTitle('Midmind API').setVersion('1.0').addBearerAuth().build();
     const documentFactory = () => SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, documentFactory);
