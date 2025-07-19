@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
@@ -15,7 +16,11 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin: string, callback: (err: Error | null, allow?: boolean) => void) => {
+      console.log('Incoming origin:', origin);
+      console.log('Allowed origins:', allowedOrigins);
+
       if (!origin || allowedOrigins.includes(origin)) {
+        console.log('inside if before callback');
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
