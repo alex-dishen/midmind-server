@@ -38,9 +38,9 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  // @Matches(/^https?:\/\/[^,\s]+(,\s*https?:\/\/[^,\s]+)*$/, {
-  //   message: 'CORS_ORIGIN must be a valid URL or comma-separated URLs starting with http:// or https://',
-  // })
+  @Matches(/^https?:\/\/[^,\s]+(,\s*https?:\/\/[^,\s]+)*$/, {
+    message: 'CORS_ORIGIN must be a valid URL or comma-separated URLs starting with http:// or https://',
+  })
   CORS_ORIGIN: string;
 
   @IsString()
