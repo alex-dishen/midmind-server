@@ -11,6 +11,7 @@ export class AuthCookieService {
       httpOnly: true,
       expires: new Date(Date.now() + this.REFRESH_TOKEN_EXPIRY),
       signed: true,
+      secure: true, // ! If the server and web client are on the same domain you can remove this
       sameSite: 'none', // ! If the server and web client are on the same domain you can remove this
     });
   }
