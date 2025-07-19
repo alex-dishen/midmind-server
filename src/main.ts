@@ -24,6 +24,8 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.setGlobalPrefix('api/');
+
   if (nodeEnv !== NodeEnvironment.Production) {
     const config = new DocumentBuilder().setTitle('Midmind API').setVersion('1.0').addBearerAuth().build();
     const documentFactory = () => SwaggerModule.createDocument(app, config);
