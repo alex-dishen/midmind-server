@@ -11,9 +11,17 @@ async function bootstrap() {
   const config = app.get<AppConfigService>(AppConfigService);
 
   const nodeEnv = config.get('NODE_ENV');
+  const allowedOrigins = config.get('CORS_ORIGIN');
 
   app.enableCors({
-    origin: config.get('CORS_ORIGIN'),
+    origin: (origin: string, callback: (err: Error | null, allow?: boolean) => void) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
   });
 
   if (nodeEnv !== NodeEnvironment.Production) {
