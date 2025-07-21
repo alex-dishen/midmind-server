@@ -1,5 +1,5 @@
 // Auto-generated CRUD types for Kysely
-// Generated at 2025-07-14T06:27:06.050Z
+// Generated at 2025-07-20T15:48:14.468Z
 
 import type { ColumnType, Generated, Selectable, Insertable, Updateable } from 'kysely';
 
@@ -12,14 +12,19 @@ export enum MessageType {
   SYSTEM = 'SYSTEM',
 }
 
+export enum UserProvider {
+  GOOGLE = 'GOOGLE',
+}
+
 export type UserTable = {
   id: Generated<string>;
   email: string;
-  username: string;
   first_name: string;
   last_name: string;
   avatar: string | null;
-  password: string;
+  password: string | null;
+  provider: UserProvider | null;
+  provider_id: string | null;
   created_at: ColumnType<Date, Date | string | undefined, Date | string>;
   updated_at: ColumnType<Date, Date | string | undefined, Date | string>;
 };

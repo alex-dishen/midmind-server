@@ -12,9 +12,8 @@ export class UserDto {
 
   @Exclude()
   @ApiHideProperty()
-  password?: string;
+  password?: string | null;
 
-  username: string;
   created_at: Date;
   updated_at: Date;
   last_name: string;
@@ -23,9 +22,6 @@ export class UserDto {
 }
 
 export class CreateUserDto {
-  @IsString()
-  username: string;
-
   @IsString()
   first_name: string;
 
@@ -48,10 +44,6 @@ export class CreateUserDto {
 }
 
 export class UpdateUserDto {
-  @IsOptional()
-  @IsString()
-  username?: string;
-
   @IsOptional()
   @IsString()
   first_name?: string;

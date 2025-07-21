@@ -68,4 +68,12 @@ export class EnvironmentVariables {
     message: 'REFRESH_TOKEN_EXPIRY_TIME must be in format like "10d", "7d", "24h"',
   })
   REFRESH_TOKEN_EXPIRY_TIME: string;
+
+  @IsString()
+  @IsNotEmpty()
+  GOOGLE_CLIENT_ID: string;
+
+  @IsString()
+  @IsNotEmpty()
+  GOOGLE_CLIENT_SECRET: string;
 }

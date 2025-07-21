@@ -2,11 +2,11 @@ import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { MessageDto } from 'src/shared/dtos/message.dto';
 import { AuthCookieService } from './auth-cookie.service';
-import { AccessTokenDto, SignUpDto, SingInDto } from './dto/auth.dto';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
 import { GetUser } from 'src/shared/decorators/get-user.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { AccessTokenDto, SignInWithGoogleDto, SignUpDto, SingInDto } from './dto/auth.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -29,6 +29,14 @@ export class AuthController {
   @Post('/sign-up')
   async signUp(@Body() data: SignUpDto, @Res({ passthrough: true }) res: Response): Promise<AccessTokenDto> {
     const authResult = await this.authService.signUp(data);
+    this.cookieService.setRefreshTokenCookie(res, authResult.refresh_token);
+
+    return { access_token: authResult.access_token };
+  }
+
+  @Post('/google')
+  async signInWithGoogle(@Body() data: SignInWithGoogleDto, @Res({ passthrough: true }) res: Response): Promise<AccessTokenDto> {
+    const authResult = await this.authService.signInWithGoogle(data.code);
     this.cookieService.setRefreshTokenCookie(res, authResult.refresh_token);
 
     return { access_token: authResult.access_token };
@@ -60,9 +68,11 @@ export class AuthController {
     @GetUser('sub') userId: string,
   ): Promise<MessageDto> {
     const refreshToken = this.cookieService.getRefreshTokenFromRequest(req);
-    const logOutResponse = await this.authService.logout(userId, refreshToken);
+
+    await this.authService.logout(userId, refreshToken);
+
     this.cookieService.clearRefreshTokenCookie(res);
 
-    return logOutResponse;
+    return { message: 'Successfully logged out the user' };
   }
 }

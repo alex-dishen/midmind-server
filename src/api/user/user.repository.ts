@@ -1,5 +1,5 @@
 import { DatabaseService } from 'src/db/db.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PaginatedResult, PaginateOptions } from 'src/shared/dtos/pagination.dto';
 import { UserCreateInput, UserGetOutput, UserUpdateInput } from 'src/db/types/db.types';
 
@@ -8,21 +8,17 @@ export class UserRepository {
   constructor(private kysely: DatabaseService) {}
 
   async createUser(data: UserCreateInput): Promise<UserGetOutput> {
-    return this.kysely.db
-      .insertInto('users')
-      .values(data)
-      .returningAll()
-      .executeTakeFirstOrThrow(() => new NotFoundException());
+    return this.kysely.db.insertInto('users').values(data).returningAll().executeTakeFirstOrThrow();
   }
 
-  async getUserBy(where: Partial<UserGetOutput>): Promise<UserGetOutput> {
+  async getUserBy(where: Partial<UserGetOutput>): Promise<UserGetOutput | undefined> {
     let qb = this.kysely.db.selectFrom('users');
 
     for (const [key, value] of Object.entries(where)) {
       qb = qb.where(key as keyof UserGetOutput, '=', value);
     }
 
-    return qb.selectAll().executeTakeFirstOrThrow(() => new NotFoundException());
+    return qb.selectAll().executeTakeFirst();
   }
 
   getUsersAll({ skip, take }: PaginateOptions): Promise<PaginatedResult<UserGetOutput>> {

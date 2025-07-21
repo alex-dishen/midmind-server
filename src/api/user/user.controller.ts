@@ -6,7 +6,7 @@ import { GetUser } from 'src/shared/decorators/get-user.decorator';
 import { UpdateUserDto, UserDto } from 'src/api/user/dto/user.dto';
 import { PaginatedResult, PaginationDto } from 'src/shared/dtos/pagination.dto';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiPaginatedResponse } from 'src/shared/decorators/api-pagination-response.decorator';
 
 @ApiTags('Users')
@@ -20,6 +20,8 @@ export class UserController {
   @Get('/current')
   async getCurrentUser(@GetUser('sub') userId: string): Promise<UserDto> {
     const user = await this.userService.getUser(userId);
+
+    if (!user) throw new NotFoundException();
 
     return plainToClass(UserDto, user);
   }
@@ -54,6 +56,8 @@ export class UserController {
   @Get('/:id')
   async getUserById(@Param('id') id: string): Promise<UserDto> {
     const user = await this.userService.getUser(id);
+
+    if (!user) throw new NotFoundException();
 
     return plainToClass(UserDto, user);
   }

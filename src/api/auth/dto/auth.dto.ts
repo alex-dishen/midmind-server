@@ -10,10 +10,12 @@ export class SingInDto {
   password: string;
 }
 
-export class SignUpDto {
+export class SignInWithGoogleDto {
   @IsString()
-  username: string;
+  code: string;
+}
 
+export class SignUpDto {
   @IsString()
   first_name: string;
 

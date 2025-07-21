@@ -17,7 +17,7 @@ export class UserService {
     return this.userRepository.createUser(updatedData);
   }
 
-  async getUser(userId: string): Promise<UserDto> {
+  async getUser(userId: string): Promise<UserDto | undefined> {
     return this.userRepository.getUserBy({ id: userId });
   }
 
