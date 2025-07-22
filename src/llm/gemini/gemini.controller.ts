@@ -1,10 +1,14 @@
 import { Response } from 'express';
-import { ApiResponse } from '@nestjs/swagger';
-import { Controller, Post, Body, Res } from '@nestjs/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Post, Body, Res, UseGuards } from '@nestjs/common';
 import { GeminiService } from 'src/llm/gemini/gemini.service';
 import { GeminiRequestDto } from 'src/llm/gemini/dto/gemini-request.dto';
 import { GeminiStreamChunkDto } from 'src/llm/gemini/dto/gemini-response.dto';
+import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
 
+@ApiTags('LLM providers')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('gemini')
 export class GeminiController {
   constructor(private readonly geminiService: GeminiService) {}
