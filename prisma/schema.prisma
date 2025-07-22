@@ -40,18 +40,16 @@ model User {
 }
 
 model Chat {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String? // null for direct messages
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  user_id    String    @db.Uuid
-
-  // Chat settings
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String? // null for direct messages
+  created_at  DateTime @default(now())
+  user_id     String   @db.Uuid
   description String?
 
   // Chat metadata
-  is_deleted Boolean  @default(false)
-  deleted_at DateTime
+  updated_at DateTime? @updatedAt
+  is_deleted Boolean   @default(false)
+  deleted_at DateTime?
 
   user     User      @relation(fields: [user_id], references: [id])
   messages Message[]
@@ -69,8 +67,10 @@ model Message {
   updated_at DateTime?   @updatedAt
 
   // Message metadata
-  is_edited Boolean   @default(false)
-  edited_at DateTime?
+  is_edited  Boolean   @default(false)
+  edited_at  DateTime?
+  is_deleted Boolean   @default(false)
+  deleted_at DateTime?
 
   chat        Chat         @relation(fields: [chat_id], references: [id])
   user        User         @relation(fields: [user_id], references: [id])

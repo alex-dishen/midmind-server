@@ -8,15 +8,15 @@ import { ChatServiceType, IChatService } from './interfaces/chat.service.interfa
 export class ChatService implements IChatService {
   constructor(private chatRepository: ChatRepository) {}
 
-  async createChat(userId: string): Promise<ChatServiceType> {
+  createChat(userId: string): Promise<ChatServiceType> {
     return this.chatRepository.createChat({ user_id: userId });
   }
 
-  async getUserChats(userId: string): Promise<ChatDto[]> {
-    return this.chatRepository.getChatsByUserId(userId);
+  getUserNonArchivedChats(userId: string): Promise<ChatDto[]> {
+    return this.chatRepository.getChatsBy({ user_id: userId, is_deleted: false });
   }
 
-  async getChatById(chatId: string): Promise<ChatDto> {
+  getChatById(chatId: string): Promise<ChatDto> {
     return this.chatRepository.getChatById(chatId);
   }
 
@@ -25,6 +25,6 @@ export class ChatService implements IChatService {
   }
 
   async deleteChat(chatId: string): Promise<void> {
-    await this.chatRepository.updateChat(chatId, { is_deleted: true, deleted_at: new Date().toString() });
+    await this.chatRepository.updateChat(chatId, { is_deleted: true, deleted_at: new Date().toISOString() });
   }
 }

@@ -1,5 +1,5 @@
 // Auto-generated CRUD types for Kysely
-// Generated at 2025-07-20T15:48:14.468Z
+// Generated at 2025-07-22T05:51:53.437Z
 
 import type { ColumnType, Generated, Selectable, Insertable, Updateable } from 'kysely';
 
@@ -36,9 +36,9 @@ export type ChatTable = {
   id: Generated<string>;
   name: string | null;
   created_at: ColumnType<Date, Date | string | undefined, Date | string>;
-  updated_at: ColumnType<Date, Date | string | undefined, Date | string>;
   user_id: string;
   description: string | null;
+  updated_at: ColumnType<Date, Date | string | undefined, Date | string>;
   is_deleted: Generated<boolean>;
   deleted_at: ColumnType<Date, Date | string | undefined, Date | string>;
 };
@@ -56,6 +56,8 @@ export type MessageTable = {
   updated_at: ColumnType<Date, Date | string | undefined, Date | string>;
   is_edited: Generated<boolean>;
   edited_at: ColumnType<Date, Date | string | undefined, Date | string>;
+  is_deleted: Generated<boolean>;
+  deleted_at: ColumnType<Date, Date | string | undefined, Date | string>;
 };
 export type MessageGetOutput = Selectable<MessageTable>;
 export type MessageCreateInput = Insertable<MessageTable>;
