@@ -1,6 +1,6 @@
 import { ChatCreateInput, ChatGetOutput, ChatUpdateInput } from 'src/db/types/db.types';
 
-export type ChatData = Pick<ChatGetOutput, 'id' | 'created_at' | 'name' | 'updated_at' | 'description'>;
+export type ChatData = Pick<ChatGetOutput, 'id' | 'created_at' | 'name' | 'updated_at'>;
 
 export interface IChatRepository {
   getChatsBy(where: Partial<ChatGetOutput>): Promise<ChatData[]>;

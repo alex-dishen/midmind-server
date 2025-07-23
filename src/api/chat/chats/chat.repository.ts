@@ -14,14 +14,14 @@ export class ChatRepository implements IChatRepository {
       qb = qb.where(key as keyof ChatGetOutput, '=', value);
     }
 
-    return qb.select(['id', 'created_at', 'name', 'updated_at', 'description']).execute();
+    return qb.select(['id', 'created_at', 'name', 'updated_at']).execute();
   }
 
   createChat(data: ChatCreateInput): Promise<ChatData> {
     return this.kysely.db
       .insertInto('chats')
       .values(data)
-      .returning(['id', 'created_at', 'name', 'updated_at', 'description'])
+      .returning(['id', 'created_at', 'name', 'updated_at'])
       .executeTakeFirstOrThrow();
   }
 
@@ -29,7 +29,7 @@ export class ChatRepository implements IChatRepository {
     return this.kysely.db
       .selectFrom('chats')
       .where('id', '=', chatId)
-      .select(['id', 'created_at', 'name', 'updated_at', 'description'])
+      .select(['id', 'created_at', 'name', 'updated_at'])
       .executeTakeFirstOrThrow();
   }
 

@@ -1,5 +1,5 @@
 import { OmitType } from '@nestjs/swagger';
-import { IsEmail, IsJWT, IsOptional, IsString, IsStrongPassword } from 'class-validator';
+import { IsEmail, IsJWT, IsString, IsStrongPassword } from 'class-validator';
 import { Match } from 'src/shared/decorators/match.decorator';
 
 export class SingInDto {
@@ -31,10 +31,6 @@ export class SignUpDto {
 
   @IsEmail()
   email: string;
-
-  @IsOptional()
-  @IsString()
-  avatar?: string;
 }
 
 export class AuthDto {

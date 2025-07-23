@@ -6,7 +6,6 @@ export type ChatServiceType = {
   created_at: Date;
   name: string | null;
   updated_at: Date | null;
-  description: string | null;
 };
 
 export interface IChatService {

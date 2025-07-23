@@ -7,5 +7,4 @@ export class ChatDto {
   created_at: Date;
   name: string | null;
   updated_at: Date | null;
-  description: string | null;
 }

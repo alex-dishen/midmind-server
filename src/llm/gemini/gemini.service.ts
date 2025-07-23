@@ -11,7 +11,7 @@ export class GeminiService {
     this.gemini = new GoogleGenAI({});
   }
 
-  async generateResponse(data: GeminiRequestDto) {
+  async askGemini(data: GeminiRequestDto) {
     try {
       const response = await this.gemini.models.generateContentStream({ model: data.model, contents: data.message });
 

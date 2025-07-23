@@ -1,27 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/db/db.service';
-import { MessageCreateInput, MessageUpdateInput } from 'src/db/types/db.types';
+import { MessageCreateInput } from 'src/db/types/db.types';
 import { PaginatedResult, PaginateOptions } from 'src/shared/dtos/pagination.dto';
-import { GetChatMessagesOutput } from './types/message.repository.types';
+import { IMessageRepository, MessageData } from './interfaces/message.repository.interface';
 
 @Injectable()
-export class MessageRepository {
+export class MessageRepository implements IMessageRepository {
   constructor(private kysely: DatabaseService) {}
 
-  async createMessage(data: MessageCreateInput): Promise<void> {
+  async createMessage(data: MessageCreateInput | MessageCreateInput[]): Promise<void> {
     await this.kysely.db.insertInto('messages').values(data).execute();
   }
 
-  getChatMessages(chatId: string, pagination: PaginateOptions): Promise<PaginatedResult<GetChatMessagesOutput>> {
+  getChatMessages(chatId: string, pagination: PaginateOptions): Promise<PaginatedResult<MessageData>> {
     const qb = this.kysely.db
       .selectFrom('messages')
-      .select(['id', 'content', 'user_id', 'edited_at', 'created_at', 'updated_at', 'type', 'is_edited'])
-      .where('chat_id', '=', chatId);
+      .select(['id', 'content', 'user_id', 'created_at', 'type'])
+      .where('chat_id', '=', chatId)
+      .orderBy('created_at', 'asc');
 
     return this.kysely.paginate(qb, pagination);
-  }
-
-  async updateMessage(messageId: string, data: MessageUpdateInput): Promise<void> {
-    await this.kysely.db.updateTable('messages').set(data).where('id', '=', messageId).execute();
   }
 }

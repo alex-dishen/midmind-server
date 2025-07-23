@@ -41,6 +41,7 @@ export class DatabaseService {
     const [count, data] = await Promise.all([
       qb
         .clearSelect()
+        .clearOrderBy()
         .select(eb => eb.fn.countAll<string>().as('total'))
         .executeTakeFirst(),
       qb.limit(take).offset(skip).execute(),

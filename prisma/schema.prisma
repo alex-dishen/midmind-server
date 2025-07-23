@@ -14,11 +14,15 @@ enum MessageType {
   FILE
   AUDIO
   VIDEO
-  SYSTEM // System messages like "User joined the chat"
 }
 
 enum UserProvider {
   GOOGLE
+}
+
+enum MessageSender {
+  SYSTEM
+  USER
 }
 
 model User {
@@ -27,7 +31,7 @@ model User {
   first_name  String
   last_name   String
   avatar      String?
-  password    String? // null when added with google or other providers
+  password    String? // Null when added with google or other providers
   provider    UserProvider?
   provider_id String?
   created_at  DateTime      @default(now())
@@ -40,11 +44,10 @@ model User {
 }
 
 model Chat {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String? // null for direct messages
-  created_at  DateTime @default(now())
-  user_id     String   @db.Uuid
-  description String?
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String? // Null for first messages
+  created_at DateTime @default(now())
+  user_id    String   @db.Uuid
 
   // Chat metadata
   updated_at DateTime? @updatedAt
@@ -54,41 +57,31 @@ model Chat {
   user     User      @relation(fields: [user_id], references: [id])
   messages Message[]
 
+  @@index([user_id], map: "chat_user_id_idx")
   @@map("chats")
 }
 
 model Message {
-  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  content    String
-  type       MessageType @default(TEXT)
-  chat_id    String      @db.Uuid
-  user_id    String      @db.Uuid
-  created_at DateTime    @default(now())
-  updated_at DateTime?   @updatedAt
+  id                  String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content             String
+  type                MessageType   @default(TEXT)
+  chat_id             String        @db.Uuid
+  user_id             String?       @db.Uuid
+  llm_model           String? // Null when a user sends a message
+  sender_type         MessageSender
+  parent_message_id   String?       @db.Uuid // Previous ai message id
+  response_message_id String?       @db.Uuid // Message id ai gave a response to
 
   // Message metadata
-  is_edited  Boolean   @default(false)
-  edited_at  DateTime?
-  is_deleted Boolean   @default(false)
-  deleted_at DateTime?
-
-  chat        Chat         @relation(fields: [chat_id], references: [id])
-  user        User         @relation(fields: [user_id], references: [id])
-  attachments Attachment[]
-
-  @@map("messages")
-}
-
-model Attachment {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  file_name  String
-  file_size  Int
-  mime_type  String
-  url        String
-  message_id String   @db.Uuid
   created_at DateTime @default(now())
 
-  message Message @relation(fields: [message_id], references: [id])
+  chat                  Chat      @relation(fields: [chat_id], references: [id])
+  user                  User?     @relation(fields: [user_id], references: [id])
+  previousAiMessage     Message?  @relation("PreviousAiMessage", fields: [parent_message_id], references: [id])
+  userMessageResponseTo Message?  @relation("UserMessageResponse", fields: [response_message_id], references: [id])
+  nextAiMessages        Message[] @relation("PreviousAiMessage")
+  userMessageResponses  Message[] @relation("UserMessageResponse")
 
-  @@map("attachments")
+  @@index([chat_id], map: "message_chat_id_idx")
+  @@map("messages")
 }

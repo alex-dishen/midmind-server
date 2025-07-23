@@ -7,10 +7,7 @@ export class AppMessageDto {
   id: string;
 
   content: string;
-  user_id: string;
-  edited_at: Date;
   created_at: Date;
-  updated_at: Date;
   type: MessageType;
-  is_edited: boolean;
+  user_id: string | null;
 }

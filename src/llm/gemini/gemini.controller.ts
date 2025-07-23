@@ -23,7 +23,7 @@ export class GeminiController {
       'Access-Control-Allow-Origin': '*',
     });
 
-    const response = await this.geminiService.generateResponse(data);
+    const response = await this.geminiService.askGemini(data);
 
     for await (const chunk of response) {
       res.write(`data: ${JSON.stringify({ content: chunk.text })}\n\n`);
