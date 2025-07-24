@@ -1,5 +1,5 @@
-import { MessageType } from 'src/db/types/db.types';
 import { IsUUID } from 'class-validator';
+import { MessageSenderRole } from 'src/db/types/db.types';
 
 // The name is not MessageDto as there is already general MessageDto class
 export class AppMessageDto {
@@ -8,6 +8,5 @@ export class AppMessageDto {
 
   content: string;
   created_at: Date;
-  type: MessageType;
-  user_id: string | null;
+  role: MessageSenderRole;
 }

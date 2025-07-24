@@ -1,4 +1,3 @@
-import { MessageDto } from 'src/shared/dtos/message.dto';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
 import { AppMessageDto } from 'src/api/chat/messages/dto/message.dto';
 import { MessageService } from 'src/api/chat/messages/message.service';
@@ -59,7 +58,7 @@ export class MessageController {
   }
 
   @ApiOperation({ summary: 'Get chat messages' })
-  @ApiPaginatedResponse(MessageDto)
+  @ApiPaginatedResponse(AppMessageDto)
   @ApiQuery({ name: 'skip', required: false, type: Number })
   @ApiQuery({ name: 'take', required: false, type: Number })
   @Get('/chats/:id/messages')

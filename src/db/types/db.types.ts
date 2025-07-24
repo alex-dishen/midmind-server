@@ -1,23 +1,23 @@
 // Auto-generated CRUD types for Kysely
-// Generated at 2025-07-23T06:37:02.622Z
+// Generated at 2025-07-24T17:14:47.128Z
 
 import type { ColumnType, Generated, Selectable, Insertable, Updateable } from 'kysely';
 
 export enum MessageType {
-  TEXT = 'TEXT',
-  IMAGE = 'IMAGE',
-  FILE = 'FILE',
-  AUDIO = 'AUDIO',
-  VIDEO = 'VIDEO',
+  TEXT = 'text',
+  IMAGE = 'image',
+  FILE = 'file',
+  AUDIO = 'audio',
+  VIDEO = 'video',
 }
 
 export enum UserProvider {
-  GOOGLE = 'GOOGLE',
+  GOOGLE = 'google',
 }
 
-export enum MessageSender {
-  SYSTEM = 'SYSTEM',
-  USER = 'USER',
+export enum MessageSenderRole {
+  MODEL = 'model',
+  USER = 'user',
 }
 
 export type UserTable = {
@@ -56,9 +56,8 @@ export type MessageTable = {
   chat_id: string;
   user_id: string | null;
   llm_model: string | null;
-  sender_type: MessageSender;
+  role: MessageSenderRole;
   parent_message_id: string | null;
-  response_message_id: string | null;
   created_at: ColumnType<Date, Date | string | undefined, Date | string>;
 };
 export type MessageGetOutput = Selectable<MessageTable>;

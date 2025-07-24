@@ -15,7 +15,7 @@ export class MessageRepository implements IMessageRepository {
   getChatMessages(chatId: string, pagination: PaginateOptions): Promise<PaginatedResult<MessageData>> {
     const qb = this.kysely.db
       .selectFrom('messages')
-      .select(['id', 'content', 'user_id', 'created_at', 'type'])
+      .select(['id', 'content', 'role', 'created_at'])
       .where('chat_id', '=', chatId)
       .orderBy('created_at', 'asc');
 

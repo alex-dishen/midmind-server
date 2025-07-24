@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { Injectable } from '@nestjs/common';
 import { AppMessageDto } from './dto/message.dto';
-import { MessageSender } from 'src/db/types/db.types';
+import { MessageSenderRole } from 'src/db/types/db.types';
 import { MessageRepository } from './message.repository';
 import { GeminiService } from 'src/llm/gemini/gemini.service';
 import { PaginatedResult, PaginateOptions } from 'src/shared/dtos/pagination.dto';
@@ -50,16 +50,16 @@ export class MessageService implements IMessageService {
           user_id: userId,
           id: userMessageId,
           content: data.content,
-          sender_type: MessageSender.USER,
+          role: MessageSenderRole.USER,
+          parent_message_id: data.parent_message_id,
         },
         {
           chat_id: chatId,
           id: llmResponseId,
           content: fullResponse,
           llm_model: data.model,
-          sender_type: MessageSender.SYSTEM,
-          response_message_id: userMessageId,
-          parent_message_id: data.parent_message_id,
+          parent_message_id: userMessageId,
+          role: MessageSenderRole.MODEL,
         },
       ]);
 

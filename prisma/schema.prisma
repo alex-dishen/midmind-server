@@ -9,20 +9,20 @@ datasource db {
 }
 
 enum MessageType {
-  TEXT
-  IMAGE
-  FILE
-  AUDIO
-  VIDEO
+  TEXT  @map("text")
+  IMAGE @map("image")
+  FILE  @map("file")
+  AUDIO @map("audio")
+  VIDEO @map("video")
 }
 
 enum UserProvider {
-  GOOGLE
+  GOOGLE @map("google")
 }
 
-enum MessageSender {
-  SYSTEM
-  USER
+enum MessageSenderRole {
+  MODEL @map("model")
+  USER  @map("user")
 }
 
 model User {
@@ -62,25 +62,22 @@ model Chat {
 }
 
 model Message {
-  id                  String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  content             String
-  type                MessageType   @default(TEXT)
-  chat_id             String        @db.Uuid
-  user_id             String?       @db.Uuid
-  llm_model           String? // Null when a user sends a message
-  sender_type         MessageSender
-  parent_message_id   String?       @db.Uuid // Previous ai message id
-  response_message_id String?       @db.Uuid // Message id ai gave a response to
+  id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content           String
+  type              MessageType       @default(TEXT)
+  chat_id           String            @db.Uuid
+  user_id           String?           @db.Uuid
+  llm_model         String? // Null when a user sends a message
+  role              MessageSenderRole
+  parent_message_id String?           @db.Uuid // Message that was sent before the current message
 
   // Message metadata
   created_at DateTime @default(now())
 
-  chat                  Chat      @relation(fields: [chat_id], references: [id])
-  user                  User?     @relation(fields: [user_id], references: [id])
-  previousAiMessage     Message?  @relation("PreviousAiMessage", fields: [parent_message_id], references: [id])
-  userMessageResponseTo Message?  @relation("UserMessageResponse", fields: [response_message_id], references: [id])
-  nextAiMessages        Message[] @relation("PreviousAiMessage")
-  userMessageResponses  Message[] @relation("UserMessageResponse")
+  chat              Chat      @relation(fields: [chat_id], references: [id])
+  user              User?     @relation(fields: [user_id], references: [id])
+  previousAiMessage Message?  @relation("PreviousAiMessage", fields: [parent_message_id], references: [id])
+  nextAiMessages    Message[] @relation("PreviousAiMessage")
 
   @@index([chat_id], map: "message_chat_id_idx")
   @@map("messages")

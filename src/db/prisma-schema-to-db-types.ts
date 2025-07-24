@@ -8,18 +8,18 @@ const toSnakeCase = (str: string): string => {
     .toLowerCase();
 };
 
-const mapPrismaToTsType = (prismaType: string, prismaEnums: DMMF.DatamodelEnum[]): string => {
-  const typeMap: Record<string, string> = {
-    String: 'string',
-    Boolean: 'boolean',
-    Int: 'number',
-    Float: 'number',
-    DateTime: 'Date',
-    Json: 'Record<string, any>',
-    Decimal: 'number',
-    BigInt: 'bigint',
-  };
+const typeMap: Record<string, string> = {
+  String: 'string',
+  Boolean: 'boolean',
+  Int: 'number',
+  Float: 'number',
+  DateTime: 'Date',
+  Json: 'Record<string, any>',
+  Decimal: 'number',
+  BigInt: 'bigint',
+};
 
+const mapPrismaToTsType = (prismaType: string, prismaEnums: DMMF.DatamodelEnum[]): string => {
   // If the type is an enum, use the enum name
   if (prismaEnums.some(e => e.name === prismaType)) {
     return prismaType;
@@ -35,7 +35,7 @@ const createEnums = (prismaEnums: DMMF.DatamodelEnum[]): string => {
     for (const en of prismaEnums) {
       enumContent += `export enum ${en.name} {\n`;
       for (const value of en.values) {
-        enumContent += `  ${value.name} = '${value.name}',\n`;
+        enumContent += `  ${value.name} = '${value.dbName}',\n`;
       }
       enumContent += '}\n\n';
     }
