@@ -17,9 +17,6 @@ export class CreateMessageDto {
   @IsUUID()
   @IsOptional()
   parent_message_id?: string;
-
-  @IsUUID()
-  response_message_id: string;
 }
 
 export class CreateMessageResponseCompleteDto {

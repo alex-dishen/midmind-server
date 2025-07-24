@@ -39,6 +39,7 @@ export class MessageService implements IMessageService {
 
   async createMessage({ chatId, data, userId, onChunk }: CreateMessageInput): Promise<void> {
     const llmResponseId = randomUUID();
+    const userMessageId = randomUUID();
 
     try {
       const fullResponse = await this.streamLLMResponse(data, onChunk);
@@ -47,8 +48,8 @@ export class MessageService implements IMessageService {
         {
           chat_id: chatId,
           user_id: userId,
+          id: userMessageId,
           content: data.content,
-          id: data.response_message_id,
           sender_type: MessageSender.USER,
         },
         {
@@ -57,8 +58,8 @@ export class MessageService implements IMessageService {
           content: fullResponse,
           llm_model: data.model,
           sender_type: MessageSender.SYSTEM,
+          response_message_id: userMessageId,
           parent_message_id: data.parent_message_id,
-          response_message_id: data.response_message_id,
         },
       ]);
 
