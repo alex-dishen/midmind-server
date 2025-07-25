@@ -31,6 +31,7 @@ export class CreateMessageResponseErrorDto {
 }
 
 export class CreateMessageResponseContentDto {
+  id: string;
   body: string;
   type: MessageResponseType;
 }
