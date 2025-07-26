@@ -17,7 +17,7 @@ export class MessageRepository implements IMessageRepository {
       .selectFrom('messages')
       .select(['id', 'content', 'role', 'created_at'])
       .where('chat_id', '=', chatId)
-      .orderBy('created_at', 'asc');
+      .orderBy('created_at', 'desc');
 
     return this.kysely.paginate(qb, pagination);
   }

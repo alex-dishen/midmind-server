@@ -45,7 +45,7 @@ const createEnums = (prismaEnums: DMMF.DatamodelEnum[]): string => {
 };
 
 const createTableType = (modelName: string, modelFields: DMMF.Field[], prismaEnums: DMMF.DatamodelEnum[]): string => {
-  let getTypeContent = `export type ${modelName}Table = {\n`;
+  let getTypeContent = `type ${modelName}Table = {\n`;
 
   for (const field of modelFields) {
     // Exclude relations

@@ -19,16 +19,19 @@ export class ChatController {
   createChat(@GetUser('sub') userId: string): Promise<ChatDto> {
     return this.chatService.createChat(userId);
   }
+
   @ApiOperation({ summary: 'Get all user not deleted chats' })
   @Get()
   getUserChats(@GetUser('sub') userId: string): Promise<ChatDto[]> {
     return this.chatService.getUserNonArchivedChats(userId);
   }
+
   @ApiOperation({ summary: 'Get chat details' })
   @Get('/:id')
   async getChatDetails(@Param('id') chatId: string): Promise<ChatDto> {
     return this.chatService.getChatById(chatId);
   }
+
   @ApiOperation({ summary: 'Update a chat data' })
   @Put('/:id')
   async updateChatData(@Param('id') chatId: string, @Body() data: UpdateChatDto): Promise<MessageDto> {
