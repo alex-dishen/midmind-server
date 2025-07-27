@@ -44,24 +44,22 @@ export class MessageService implements IMessageService {
     try {
       const fullResponse = await this.streamLLMResponse(llmMessageId, data, onChunk);
 
-      await this.messageRepository.createMessage([
-        {
-          chat_id: chatId,
-          user_id: userId,
-          id: userMessageId,
-          content: data.content,
-          role: MessageSenderRole.USER,
-          parent_message_id: data.parent_message_id,
-        },
-        {
-          chat_id: chatId,
-          id: llmMessageId,
-          content: fullResponse,
-          llm_model: data.model,
-          parent_message_id: userMessageId,
-          role: MessageSenderRole.MODEL,
-        },
-      ]);
+      await this.messageRepository.createMessage({
+        chat_id: chatId,
+        user_id: userId,
+        id: userMessageId,
+        content: data.content,
+        role: MessageSenderRole.USER,
+        parent_message_id: data.parent_message_id,
+      });
+      await this.messageRepository.createMessage({
+        chat_id: chatId,
+        id: llmMessageId,
+        content: fullResponse,
+        llm_model: data.model,
+        parent_message_id: userMessageId,
+        role: MessageSenderRole.MODEL,
+      });
 
       onChunk({ type: MessageResponseType.COMPLETE, id: llmMessageId });
     } catch (error) {
