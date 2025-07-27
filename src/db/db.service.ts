@@ -1,21 +1,28 @@
+import { Pool } from 'pg';
+import { DB } from './types/db.types';
 import { Kysely, PostgresDialect, SelectQueryBuilder } from 'kysely';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PaginatedResult, PaginateOptions, PaginationMetadata } from 'src/shared/dtos/pagination.dto';
-import { Pool } from 'pg';
-import { DB } from './types/db.types';
+import { TransactionStorage } from './transactions/transaction-storage';
 
 @Injectable()
 export class DatabaseService {
-  public readonly db: Kysely<DB>;
+  private readonly dbConnection: Kysely<DB>;
 
   constructor() {
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
     });
 
-    this.db = new Kysely<DB>({
+    this.dbConnection = new Kysely<DB>({
       dialect: new PostgresDialect({ pool }),
     });
+  }
+
+  get db(): Kysely<DB> {
+    const tx = TransactionStorage.getStore();
+
+    return tx || this.dbConnection;
   }
 
   private generateMeta = (take: number, skip: number, total: number): PaginationMetadata => {
