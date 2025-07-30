@@ -15,6 +15,7 @@ export class DatabaseService {
     });
 
     this.dbConnection = new Kysely<DB>({
+      log: ['query'],
       dialect: new PostgresDialect({ pool }),
     });
   }

@@ -5,7 +5,7 @@ import { ChatDto } from 'src/api/chat/chats/dto/chat.dto';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
 import { GetUser } from 'src/shared/decorators/get-user.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Put, UseGuards } from '@nestjs/common';
 
 @ApiTags('Chats')
 @ApiBearerAuth()
@@ -13,12 +13,6 @@ import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nes
 @Controller('chats')
 export class ChatController {
   constructor(private chatService: ChatService) {}
-
-  @ApiOperation({ summary: 'Create a new chat' })
-  @Post()
-  createChat(@GetUser('sub') userId: string): Promise<ChatDto> {
-    return this.chatService.createChat(userId);
-  }
 
   @ApiOperation({ summary: 'Get all user not deleted chats' })
   @Get()
@@ -29,7 +23,11 @@ export class ChatController {
   @ApiOperation({ summary: 'Get chat details' })
   @Get('/:id')
   async getChatDetails(@Param('id') chatId: string): Promise<ChatDto> {
-    return this.chatService.getChatById(chatId);
+    const chat = await this.chatService.getChatById(chatId);
+
+    if (!chat) throw new NotFoundException();
+
+    return chat;
   }
 
   @ApiOperation({ summary: 'Update a chat data' })

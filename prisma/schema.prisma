@@ -8,14 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum MessageType {
-  TEXT  @map("text")
-  IMAGE @map("image")
-  FILE  @map("file")
-  AUDIO @map("audio")
-  VIDEO @map("video")
-}
-
 enum UserProvider {
   GOOGLE @map("google")
 }
@@ -23,6 +15,17 @@ enum UserProvider {
 enum MessageSenderRole {
   MODEL @map("model")
   USER  @map("user")
+}
+
+enum ConnectionType {
+  ATTACHED  @map("attached")
+  DETACHED  @map("detached")
+  TEMPORARY @map("temporary")
+}
+
+enum ContextType {
+  FULL_MESSAGE   @map("full_message")
+  TEXT_SELECTION @map("text_selection")
 }
 
 model User {
@@ -37,48 +40,82 @@ model User {
   created_at  DateTime      @default(now())
   updated_at  DateTime?     @updatedAt
 
-  user_chats    Chat[]
-  sent_messages Message[]
+  chats    Chat[]
+  messages Message[]
 
   @@map("users")
 }
 
 model Chat {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String? // Null for first messages
-  created_at DateTime @default(now())
-  user_id    String   @db.Uuid
+  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  parent_chat_id String? @db.Uuid
+  user_id        String  @db.Uuid
 
-  // Chat metadata
-  updated_at DateTime? @updatedAt
-  is_deleted Boolean   @default(false)
-  deleted_at DateTime?
+  name         String? // Null for first messages
+  thread_level Int       @default(0)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime? @updatedAt
+  is_deleted   Boolean   @default(false)
+  deleted_at   DateTime?
+  position_y   Float     @default(0)
+  position_x   Float     @default(0)
 
-  user     User      @relation(fields: [user_id], references: [id])
-  messages Message[]
+  // Relations & Prisma related
+  user                User            @relation(fields: [user_id], references: [id])
+  parentChat          Chat?           @relation("ChatHierarchy", fields: [parent_chat_id], references: [id])
+  childrenChats       Chat[]          @relation("ChatHierarchy")
+  messages            Message[]
+  childThreadContext  ThreadContext?  @relation("ChildThreadContext")
+  parentThreadContext ThreadContext[] @relation("ParentThreadContext")
 
   @@index([user_id], map: "chat_user_id_idx")
+  @@index([parent_chat_id], map: "chat_parent_id_idx")
   @@map("chats")
 }
 
 model Message {
-  id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  content           String
-  type              MessageType       @default(TEXT)
-  chat_id           String            @db.Uuid
-  user_id           String?           @db.Uuid
-  llm_model         String? // Null when a user sends a message
-  role              MessageSenderRole
-  parent_message_id String?           @db.Uuid // Message that was sent before the current message
+  id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  parent_message_id String? @db.Uuid // Message that was sent before the current message
+  chat_id           String  @db.Uuid
+  user_id           String? @db.Uuid
 
-  // Message metadata
-  created_at DateTime @default(now())
+  content    String
+  llm_model  String? // Null when a user sends a message
+  role       MessageSenderRole
+  created_at DateTime          @default(now())
 
-  chat              Chat      @relation(fields: [chat_id], references: [id])
-  user              User?     @relation(fields: [user_id], references: [id])
-  previousAiMessage Message?  @relation("PreviousAiMessage", fields: [parent_message_id], references: [id])
-  nextAiMessages    Message[] @relation("PreviousAiMessage")
+  // Relations & Prisma related
+  user                User?           @relation(fields: [user_id], references: [id])
+  chat                Chat            @relation(fields: [chat_id], references: [id])
+  parentMessage       Message?        @relation("MessageHierarchy", fields: [parent_message_id], references: [id])
+  childMessages       Message[]       @relation("MessageHierarchy")
+  childThreadContext  ThreadContext?  @relation("ChildMessageContext")
+  parentThreadContext ThreadContext[] @relation("ParentMessageContext")
 
   @@index([chat_id], map: "message_chat_id_idx")
   @@map("messages")
+}
+
+model ThreadContext {
+  id                String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  child_chat_id     String @unique @db.Uuid
+  parent_chat_id    String @db.Uuid
+  parent_message_id String @db.Uuid
+  child_message_id  String @unique @db.Uuid
+
+  selected_text    String? // Can be null when full message was used to create a thread
+  start_position   Int? // Can be null when full message was used to create a thread
+  end_position     Int? // Can be null when full message was used to create a thread
+  created_at       DateTime       @default(now())
+  context_type     ContextType
+  connection_type  ConnectionType
+  connection_color String
+
+  // Relations & Prisma related
+  childChat     Chat    @relation("ChildThreadContext", fields: [child_chat_id], references: [id])
+  parentChat    Chat    @relation("ParentThreadContext", fields: [parent_chat_id], references: [id])
+  childMessage  Message @relation("ChildMessageContext", fields: [child_message_id], references: [id])
+  parentMessage Message @relation("ParentMessageContext", fields: [parent_message_id], references: [id])
+
+  @@map("thread_contexts")
 }
