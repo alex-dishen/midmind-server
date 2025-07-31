@@ -50,6 +50,7 @@ model Chat {
   id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   parent_chat_id String? @db.Uuid
   user_id        String  @db.Uuid
+  root_chat_id   String? @db.Uuid
 
   name         String? // Null for first messages
   thread_level Int       @default(0)
@@ -59,9 +60,12 @@ model Chat {
   deleted_at   DateTime?
   position_y   Float     @default(0)
   position_x   Float     @default(0)
+  path         String[] //  JSON array of chat IDs from root to current chat: ["root_id", "child1_id", "current_id"]
 
   // Relations & Prisma related
   user                User            @relation(fields: [user_id], references: [id])
+  rootChat            Chat?           @relation("RootChatRelation", fields: [root_chat_id], references: [id])
+  descendantChats     Chat[]          @relation("RootChatRelation")
   parentChat          Chat?           @relation("ChatHierarchy", fields: [parent_chat_id], references: [id])
   childrenChats       Chat[]          @relation("ChatHierarchy")
   messages            Message[]
@@ -70,6 +74,8 @@ model Chat {
 
   @@index([user_id], map: "chat_user_id_idx")
   @@index([parent_chat_id], map: "chat_parent_id_idx")
+  @@index([root_chat_id], map: "chat_root_id_idx")
+  @@index([root_chat_id, thread_level], map: "chat_root_level_idx")
   @@map("chats")
 }
 

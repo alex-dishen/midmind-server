@@ -1,4 +1,4 @@
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { UserService } from 'src/api/user/user.service';
 import { MessageDto } from 'src/shared/dtos/message.dto';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
@@ -23,7 +23,7 @@ export class UserController {
 
     if (!user) throw new NotFoundException();
 
-    return plainToClass(UserDto, user);
+    return plainToInstance(UserDto, user);
   }
 
   @ApiOperation({ summary: 'Update current user' })
@@ -47,7 +47,7 @@ export class UserController {
     const { meta, data } = await this.userService.getAllUsers(pagination);
 
     return {
-      data: plainToClass(UserDto, data),
+      data: plainToInstance(UserDto, data),
       meta,
     };
   }
@@ -59,7 +59,7 @@ export class UserController {
 
     if (!user) throw new NotFoundException();
 
-    return plainToClass(UserDto, user);
+    return plainToInstance(UserDto, user);
   }
 
   @ApiOperation({ summary: 'Update user information' })

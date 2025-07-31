@@ -19,13 +19,15 @@ const typeMap: Record<string, string> = {
   BigInt: 'bigint',
 };
 
-const mapPrismaToTsType = (prismaType: string, prismaEnums: DMMF.DatamodelEnum[]): string => {
+const mapPrismaToTsType = (prismaType: string, prismaEnums: DMMF.DatamodelEnum[], isList: boolean): string => {
   // If the type is an enum, use the enum name
   if (prismaEnums.some(e => e.name === prismaType)) {
-    return prismaType;
+    return isList ? `${prismaType}[]` : prismaType;
   }
 
-  return typeMap[prismaType] || 'any';
+  const baseType = typeMap[prismaType] || 'any';
+
+  return isList ? `${baseType}[]` : baseType;
 };
 
 const createEnums = (prismaEnums: DMMF.DatamodelEnum[]): string => {
@@ -51,7 +53,7 @@ const createTableType = (modelName: string, modelFields: DMMF.Field[], prismaEnu
     // Exclude relations
     if (field.kind === 'object' || field.relationName) continue;
 
-    const tsType = mapPrismaToTsType(field.type, prismaEnums);
+    const tsType = mapPrismaToTsType(field.type, prismaEnums, field.isList);
 
     if (field.type === 'DateTime') {
       getTypeContent += `  ${field.name}: ColumnType<Date, Date | string | undefined, Date | string>;\n`;

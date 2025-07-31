@@ -32,9 +32,6 @@ class ConversationThreadContextDto {
 
   @IsEnum(ContextType)
   context_type: ContextType;
-
-  @IsNumber()
-  thread_level: number;
 }
 
 export class CreateConversationDto {

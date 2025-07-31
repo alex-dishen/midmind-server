@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/db/db.service';
-import { ChatData } from './types/chat.repository.types';
+import { ChatData, GetChatByIdOutput } from './types/chat.repository.types';
 import { ChatCreateInput, ChatGetOutput, ChatUpdateInput } from 'src/db/types/db.types';
 
 @Injectable()
@@ -14,22 +14,18 @@ export class ChatRepository {
       qb = qb.where(key as keyof ChatGetOutput, '=', value);
     }
 
-    return qb.select(['id', 'created_at', 'name', 'updated_at', 'thread_level']).execute();
+    return qb.select(['id', 'name', 'thread_level']).execute();
   }
 
   createChat(data: ChatCreateInput): Promise<ChatData> {
-    return this.kysely.db
-      .insertInto('chats')
-      .values(data)
-      .returning(['id', 'created_at', 'name', 'updated_at', 'thread_level'])
-      .executeTakeFirstOrThrow();
+    return this.kysely.db.insertInto('chats').values(data).returning(['id', 'name', 'thread_level']).executeTakeFirstOrThrow();
   }
 
-  getChatById(chatId: string): Promise<ChatData | undefined> {
+  getChatById(chatId: string): Promise<GetChatByIdOutput | undefined> {
     return this.kysely.db
       .selectFrom('chats')
       .where('id', '=', chatId)
-      .select(['id', 'created_at', 'name', 'updated_at', 'thread_level'])
+      .select(['id', 'name', 'thread_level', 'root_chat_id', 'path'])
       .executeTakeFirst();
   }
 

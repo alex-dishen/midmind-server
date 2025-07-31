@@ -45,10 +45,31 @@ export class ConversationService {
   private async saveConversationData({ data, fullLlmResponse, llmMessageId, userId }: SaveConversationDataInput) {
     const chat = await this.chatRepository.getChatById(data.chat_id);
 
+    // A conversation was initialized to a non existing chat/thread
     if (!chat) {
+      let threadLevel = 0;
+      let rootChatId: string | undefined;
+      let contextPath: string[] = [data.chat_id];
+
+      // A conversation was initialized in a thread
+      if (data.thread_context) {
+        const parentChat = await this.chatRepository.getChatById(data.thread_context.parent_chat_id);
+
+        if (parentChat) {
+          threadLevel = parentChat.thread_level + 1;
+          // parentChat may not have root_chat_id as parent might be the root itself
+          rootChatId = parentChat.root_chat_id || data.thread_context.parent_chat_id;
+          // parentChat.path = ['root_id', 'parent_chat_id']
+          contextPath = [...parentChat.path, data.chat_id];
+        }
+      }
+
       await this.chatRepository.createChat({
         user_id: userId,
         id: data.chat_id,
+        path: contextPath,
+        root_chat_id: rootChatId,
+        thread_level: threadLevel,
         parent_chat_id: data.thread_context?.parent_chat_id,
       });
     }
