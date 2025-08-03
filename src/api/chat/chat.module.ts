@@ -11,12 +11,14 @@ import { ConversationController } from './conversations/conversation.controller'
 import { ConversationService } from './conversations/conversation.service';
 import { ThreadContextController } from './thread-contexts/thread-context.controller';
 import { ThreadContextService } from './thread-contexts/thread-context.service';
+import { ConversationRepository } from './conversations/conversation.repository';
 
 @Module({
   imports: [LLMModule],
   controllers: [ConversationController, ChatController, MessageController, ThreadContextController],
   providers: [
     ConversationService,
+    ConversationRepository,
     ChatRepository,
     ChatService,
     MessageRepository,

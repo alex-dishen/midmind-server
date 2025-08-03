@@ -5,10 +5,17 @@ import { MessageRepository } from '../messages/message.repository';
 import { ThreadContextRepository } from '../thread-contexts/thread-context.repository';
 import { MessageSenderRole } from 'src/db/types/db.types';
 import { ConversationResponseType } from './dto/create-conversation.dto';
-import { AskAiInput, SaveConversationDataInput, StreamLLMResponseInput } from './types/conversation.service.types';
+import {
+  AskAiInput,
+  GetAIContextOutput,
+  SaveConversationDataInput,
+  StreamLLMResponseInput,
+} from './types/conversation.service.types';
 import { generateRandomPastelHexColor } from 'src/shared/utils/generate-random-hex';
 import { ChatRepository } from '../chats/chat.repository';
 import { Transaction } from 'src/db/transactions/transaction.decorator';
+import { ContentListUnion } from '@google/genai';
+import { ConversationRepository } from './conversation.repository';
 
 @Injectable()
 export class ConversationService {
@@ -16,12 +23,13 @@ export class ConversationService {
     private geminiService: GeminiService,
     private chatRepository: ChatRepository,
     private messageRepository: MessageRepository,
+    private conversationRepository: ConversationRepository,
     private threadContextRepository: ThreadContextRepository,
   ) {}
 
-  private async streamLLMResponse({ llmMessageId, content, model, onChunk }: StreamLLMResponseInput): Promise<string> {
+  private async streamLLMResponse({ llmMessageId, contents, model, onChunk }: StreamLLMResponseInput): Promise<string> {
     const chunks = await this.geminiService.askGemini({
-      message: content,
+      contents,
       model: model,
     });
 
@@ -111,11 +119,40 @@ export class ConversationService {
     }
   }
 
+  private async getAIContext(chatId: string): Promise<GetAIContextOutput[]> {
+    const chatInfo = await this.chatRepository.getChatById(chatId);
+
+    if (!chatInfo || !chatInfo.path.length) {
+      return [];
+    }
+
+    const contextMessages = await this.conversationRepository.getMessagesForAiContext(chatId);
+
+    const result = contextMessages.map(message => ({
+      role: message.role,
+      parts: [{ text: message.content }],
+    }));
+
+    return result;
+  }
+
   async askAi({ data, userId, onChunk }: AskAiInput): Promise<void> {
     const llmMessageId = randomUUID();
 
     try {
-      const fullLlmResponse = await this.streamLLMResponse({ llmMessageId, onChunk, content: data.content, model: data.model });
+      const aiContext = await this.getAIContext(data.chat_id);
+
+      const contextWithUserQuestion: ContentListUnion = [
+        ...aiContext,
+        { role: MessageSenderRole.USER, parts: [{ text: data.content }] },
+      ];
+
+      const fullLlmResponse = await this.streamLLMResponse({
+        onChunk,
+        llmMessageId,
+        model: data.model,
+        contents: contextWithUserQuestion,
+      });
 
       await this.saveConversationData({ data, fullLlmResponse, llmMessageId, userId });
 

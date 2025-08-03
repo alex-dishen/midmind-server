@@ -5,10 +5,17 @@ import {
   CreateConversationResponseContentDto,
   CreateConversationResponseErrorDto,
 } from '../dto/create-conversation.dto';
+import { ContentListUnion } from '@google/genai';
+import { MessageSenderRole } from 'src/db/types/db.types';
 
 type OnChunkT = (
   chunk: CreateConversationResponseCompleteDto | CreateConversationResponseErrorDto | CreateConversationResponseContentDto,
 ) => void;
+
+export type GetAIContextOutput = {
+  role: MessageSenderRole;
+  parts: { text: string }[];
+};
 
 export type SaveConversationDataInput = {
   userId: string;
@@ -18,7 +25,7 @@ export type SaveConversationDataInput = {
 };
 
 export type StreamLLMResponseInput = {
-  content: string;
+  contents: ContentListUnion;
   model: GeminiModels;
   llmMessageId: string;
   onChunk: OnChunkT;
