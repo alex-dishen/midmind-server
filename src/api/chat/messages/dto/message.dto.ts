@@ -2,7 +2,10 @@ import { IsUUID } from 'class-validator';
 import { ContextType, MessageSenderRole } from 'src/db/types/db.types';
 
 class AppMessageThreadDto {
+  @IsUUID()
   id: string;
+  @IsUUID()
+  child_chat_id: string;
   connection_type: string;
   connection_color: string;
   context_type: ContextType;
@@ -16,6 +19,7 @@ export class AppMessageDto {
   id: string;
 
   content: string;
+  created_at: Date;
   role: MessageSenderRole;
   llm_model: string | null;
   threads: AppMessageThreadDto[];

@@ -21,11 +21,13 @@ export class MessageRepository {
         'content',
         'role',
         'llm_model',
+        'created_at',
         jsonArrayFrom(
           eb
             .selectFrom('thread_contexts as tc')
             .select([
               'tc.id',
+              'tc.child_chat_id',
               'tc.connection_type',
               'tc.connection_color',
               'tc.context_type',

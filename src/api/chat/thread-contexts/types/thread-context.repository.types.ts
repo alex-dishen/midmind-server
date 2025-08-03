@@ -7,5 +7,5 @@ export type CreateThreadContextOutput = Pick<
 
 export type GetThreadContextByOutput = Pick<
   ThreadContextGetOutput,
-  'id' | 'connection_color' | 'context_type' | 'end_position' | 'start_position' | 'connection_type'
+  'id' | 'connection_color' | 'context_type' | 'end_position' | 'start_position' | 'connection_type' | 'child_chat_id'
 >;

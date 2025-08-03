@@ -22,6 +22,8 @@ export class ThreadContextRepository {
       qb = qb.where(key as keyof ThreadContextGetOutput, '=', value);
     }
 
-    return qb.selectAll().executeTakeFirstOrThrow();
+    return qb
+      .select(['id', 'child_chat_id', 'connection_type', 'connection_color', 'context_type', 'end_position', 'start_position'])
+      .executeTakeFirstOrThrow();
   }
 }

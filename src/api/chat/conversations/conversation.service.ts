@@ -80,15 +80,19 @@ export class ConversationService {
       id: data.message_id,
       content: data.content,
       role: MessageSenderRole.USER,
+      // Date is passed because messages are in transaction and they are flushed at the same time. Ruins messages order
+      created_at: new Date().toISOString(),
       parent_message_id: data.thread_context?.parent_message_id,
     });
 
     await this.messageRepository.createMessage({
-      chat_id: data.chat_id,
       id: llmMessageId,
-      content: fullLlmResponse,
+      chat_id: data.chat_id,
       llm_model: data.model,
+      content: fullLlmResponse,
       role: MessageSenderRole.MODEL,
+      // Date is passed because messages are in transaction and they are flushed at the same time. Ruins messages order
+      created_at: new Date().toISOString(),
     });
 
     if (data.thread_context) {
