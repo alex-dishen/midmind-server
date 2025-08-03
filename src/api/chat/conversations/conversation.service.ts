@@ -173,16 +173,16 @@ export class ConversationService {
           userInput: data.content,
         });
 
-        onChunk({ type: ConversationResponseType.TITLE, chat_id: data.chat_id, title: chatTitle });
+        onChunk({ chat_id: data.chat_id, type: ConversationResponseType.TITLE, title: chatTitle });
       }
 
       await this.saveConversationData({ data, fullLlmResponse, llmMessageId, userId, chatTitle });
 
-      onChunk({ type: ConversationResponseType.COMPLETE, id: llmMessageId });
+      onChunk({ id: llmMessageId, type: ConversationResponseType.COMPLETE });
     } catch (error) {
       console.error('Error in streaming:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      onChunk({ type: ConversationResponseType.ERROR, id: llmMessageId, error: errorMessage });
+      onChunk({ id: llmMessageId, type: ConversationResponseType.ERROR, error: errorMessage });
       throw new Error(errorMessage);
     }
   }
