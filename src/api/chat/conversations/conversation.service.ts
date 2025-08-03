@@ -140,7 +140,7 @@ export class ConversationService {
     const llmMessageId = randomUUID();
 
     try {
-      const aiContext = await this.getAIContext(data.chat_id);
+      const aiContext = await this.getAIContext(data.thread_context?.parent_chat_id || data.chat_id);
 
       const contextWithUserQuestion: ContentListUnion = [
         ...aiContext,
