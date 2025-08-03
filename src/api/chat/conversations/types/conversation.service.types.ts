@@ -4,13 +4,23 @@ import {
   CreateConversationResponseCompleteDto,
   CreateConversationResponseContentDto,
   CreateConversationResponseErrorDto,
+  CreateConversationResponseTitleDto,
 } from '../dto/create-conversation.dto';
 import { ContentListUnion } from '@google/genai';
 import { MessageSenderRole } from 'src/db/types/db.types';
 
 type OnChunkT = (
-  chunk: CreateConversationResponseCompleteDto | CreateConversationResponseErrorDto | CreateConversationResponseContentDto,
+  chunk:
+    | CreateConversationResponseCompleteDto
+    | CreateConversationResponseErrorDto
+    | CreateConversationResponseContentDto
+    | CreateConversationResponseTitleDto,
 ) => void;
+
+export type GenerateChatTitleOutput = {
+  userInput: string;
+  model: GeminiModels;
+};
 
 export type GetAIContextOutput = {
   role: MessageSenderRole;
@@ -19,6 +29,7 @@ export type GetAIContextOutput = {
 
 export type SaveConversationDataInput = {
   userId: string;
+  chatTitle?: string;
   llmMessageId: string;
   fullLlmResponse: string;
   data: CreateConversationDto;

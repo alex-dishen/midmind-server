@@ -7,6 +7,7 @@ import { MessageSenderRole } from 'src/db/types/db.types';
 import { ConversationResponseType } from './dto/create-conversation.dto';
 import {
   AskAiInput,
+  GenerateChatTitleOutput,
   GetAIContextOutput,
   SaveConversationDataInput,
   StreamLLMResponseInput,
@@ -14,8 +15,8 @@ import {
 import { generateRandomPastelHexColor } from 'src/shared/utils/generate-random-hex';
 import { ChatRepository } from '../chats/chat.repository';
 import { Transaction } from 'src/db/transactions/transaction.decorator';
-import { ContentListUnion } from '@google/genai';
 import { ConversationRepository } from './conversation.repository';
+import { titlePrompt } from 'src/llm/prompts/title';
 
 @Injectable()
 export class ConversationService {
@@ -27,8 +28,24 @@ export class ConversationService {
     private threadContextRepository: ThreadContextRepository,
   ) {}
 
+  private async generateAIPrompt(userInput: string, chatId?: string): Promise<GetAIContextOutput[] | string> {
+    // If there is not chatId it means the root chat was created
+    if (!chatId) {
+      return userInput;
+    }
+
+    const contextMessages = await this.conversationRepository.getMessagesForAiContext(chatId);
+
+    const result = contextMessages.map(message => ({
+      role: message.role,
+      parts: [{ text: message.content }],
+    }));
+
+    return [...result, { role: MessageSenderRole.USER, parts: [{ text: userInput }] }];
+  }
+
   private async streamLLMResponse({ llmMessageId, contents, model, onChunk }: StreamLLMResponseInput): Promise<string> {
-    const chunks = await this.geminiService.askGemini({
+    const chunks = await this.geminiService.askGeminiWithStream({
       contents,
       model: model,
     });
@@ -47,6 +64,19 @@ export class ConversationService {
     }
 
     return fullResponse;
+  }
+
+  private async generateChatTitle({ model, userInput }: GenerateChatTitleOutput): Promise<string> {
+    const geminiResponse = await this.geminiService.askGemini({
+      model: model,
+      contents: `${titlePrompt} \n User question: ${userInput}`,
+      config: {
+        temperature: 0.3,
+        maxOutputTokens: 50,
+      },
+    });
+
+    return geminiResponse.text || 'New conversation';
   }
 
   @Transaction()
@@ -119,42 +149,34 @@ export class ConversationService {
     }
   }
 
-  private async getAIContext(chatId: string): Promise<GetAIContextOutput[]> {
-    const chatInfo = await this.chatRepository.getChatById(chatId);
-
-    if (!chatInfo || !chatInfo.path.length) {
-      return [];
-    }
-
-    const contextMessages = await this.conversationRepository.getMessagesForAiContext(chatId);
-
-    const result = contextMessages.map(message => ({
-      role: message.role,
-      parts: [{ text: message.content }],
-    }));
-
-    return result;
-  }
-
+  // The function handles messages in main chats and threads
   async askAi({ data, userId, onChunk }: AskAiInput): Promise<void> {
     const llmMessageId = randomUUID();
+    let chatTitle: string | undefined;
 
     try {
-      const aiContext = await this.getAIContext(data.thread_context?.parent_chat_id || data.chat_id);
+      // If user creates a thread we need to get parent context as child chat doesn't exist yet
+      const chatInfo = await this.chatRepository.getChatById(data.thread_context?.parent_chat_id || data.chat_id);
 
-      const contextWithUserQuestion: ContentListUnion = [
-        ...aiContext,
-        { role: MessageSenderRole.USER, parts: [{ text: data.content }] },
-      ];
+      const promptToAI = await this.generateAIPrompt(data.content, chatInfo?.id);
 
       const fullLlmResponse = await this.streamLLMResponse({
         onChunk,
         llmMessageId,
         model: data.model,
-        contents: contextWithUserQuestion,
+        contents: promptToAI,
       });
 
-      await this.saveConversationData({ data, fullLlmResponse, llmMessageId, userId });
+      if (!chatInfo) {
+        chatTitle = await this.generateChatTitle({
+          model: data.model,
+          userInput: data.content,
+        });
+
+        onChunk({ type: ConversationResponseType.TITLE, chat_id: data.chat_id, title: chatTitle });
+      }
+
+      await this.saveConversationData({ data, fullLlmResponse, llmMessageId, userId, chatTitle });
 
       onChunk({ type: ConversationResponseType.COMPLETE, id: llmMessageId });
     } catch (error) {

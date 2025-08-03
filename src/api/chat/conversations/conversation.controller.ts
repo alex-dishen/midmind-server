@@ -8,6 +8,7 @@ import {
   CreateConversationResponseCompleteDto,
   CreateConversationResponseContentDto,
   CreateConversationResponseErrorDto,
+  CreateConversationResponseTitleDto,
 } from './dto/create-conversation.dto';
 import { ConversationService } from './conversation.service';
 
@@ -23,9 +24,10 @@ export class ConversationController {
   @ApiOkResponse({
     schema: {
       oneOf: [
+        { $ref: getSchemaPath(CreateConversationResponseTitleDto) },
+        { $ref: getSchemaPath(CreateConversationResponseErrorDto) },
         { $ref: getSchemaPath(CreateConversationResponseContentDto) },
         { $ref: getSchemaPath(CreateConversationResponseCompleteDto) },
-        { $ref: getSchemaPath(CreateConversationResponseErrorDto) },
       ],
     },
   })

@@ -10,9 +10,20 @@ export class GeminiService {
     this.gemini = new GoogleGenAI({});
   }
 
-  async askGemini(data: GenerateContentParameters) {
+  async askGeminiWithStream(data: GenerateContentParameters) {
     try {
       const response = await this.gemini.models.generateContentStream({ model: data.model, contents: data.contents });
+
+      return response;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
+
+  async askGemini(data: GenerateContentParameters) {
+    try {
+      const response = await this.gemini.models.generateContent({ model: data.model, contents: data.contents });
 
       return response;
     } catch (e) {

@@ -4,6 +4,7 @@ import { GeminiModels } from 'src/llm/gemini/type/gemini-models';
 
 export enum ConversationResponseType {
   ERROR = 'error',
+  TITLE = 'title',
   CONTENT = 'content',
   COMPLETE = 'complete',
 }
@@ -53,6 +54,12 @@ export class CreateConversationDto {
 
 export class CreateConversationResponseCompleteDto {
   id: string;
+  type: ConversationResponseType;
+}
+
+export class CreateConversationResponseTitleDto {
+  title: string;
+  chat_id: string;
   type: ConversationResponseType;
 }
 
