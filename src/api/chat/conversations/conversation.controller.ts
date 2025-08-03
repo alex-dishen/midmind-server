@@ -20,7 +20,12 @@ export class ConversationController {
   constructor(private conversationService: ConversationService) {}
 
   @ApiOperation({ summary: 'Initiate a new conversation' })
-  @ApiExtraModels(CreateConversationResponseContentDto, CreateConversationResponseCompleteDto, CreateConversationResponseErrorDto)
+  @ApiExtraModels(
+    CreateConversationResponseTitleDto,
+    CreateConversationResponseContentDto,
+    CreateConversationResponseCompleteDto,
+    CreateConversationResponseErrorDto,
+  )
   @ApiOkResponse({
     schema: {
       oneOf: [

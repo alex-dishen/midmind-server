@@ -11,24 +11,14 @@ export class GeminiService {
   }
 
   async askGeminiWithStream(data: GenerateContentParameters) {
-    try {
-      const response = await this.gemini.models.generateContentStream({ model: data.model, contents: data.contents });
+    const response = await this.gemini.models.generateContentStream({ model: data.model, contents: data.contents });
 
-      return response;
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
+    return response;
   }
 
   async askGemini(data: GenerateContentParameters) {
-    try {
-      const response = await this.gemini.models.generateContent({ model: data.model, contents: data.contents });
+    const response = await this.gemini.models.generateContent({ model: data.model, contents: data.contents });
 
-      return response;
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
+    return response;
   }
 }
