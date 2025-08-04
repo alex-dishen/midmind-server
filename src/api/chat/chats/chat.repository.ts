@@ -14,7 +14,7 @@ export class ChatRepository {
       qb = qb.where(key as keyof ChatGetOutput, '=', value);
     }
 
-    return qb.select(['id', 'name', 'thread_level']).execute();
+    return qb.select(['id', 'name', 'thread_level']).orderBy('created_at', 'desc').execute();
   }
 
   createChat(data: ChatCreateInput): Promise<ChatData> {

@@ -80,7 +80,7 @@ export class ConversationService {
   }
 
   @Transaction()
-  private async saveConversationData({ data, fullLlmResponse, llmMessageId, userId }: SaveConversationDataInput) {
+  private async saveConversationData({ data, fullLlmResponse, llmMessageId, userId, chatTitle }: SaveConversationDataInput) {
     const chat = await this.chatRepository.getChatById(data.chat_id);
 
     // A conversation was initialized to a non existing chat/thread
@@ -104,6 +104,7 @@ export class ConversationService {
 
       await this.chatRepository.createChat({
         user_id: userId,
+        name: chatTitle,
         id: data.chat_id,
         path: contextPath,
         root_chat_id: rootChatId,
