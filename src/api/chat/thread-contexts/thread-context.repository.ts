@@ -15,7 +15,7 @@ export class ThreadContextRepository {
       .executeTakeFirstOrThrow();
   }
 
-  getThreadContextBy(where: Partial<ThreadContextGetOutput>): Promise<GetThreadContextByOutput> {
+  getThreadContextBy(where: Partial<ThreadContextGetOutput>): Promise<GetThreadContextByOutput[]> {
     let qb = this.kysely.db.selectFrom('thread_contexts');
 
     for (const [key, value] of Object.entries(where)) {
@@ -24,6 +24,6 @@ export class ThreadContextRepository {
 
     return qb
       .select(['id', 'child_chat_id', 'connection_type', 'connection_color', 'context_type', 'end_position', 'start_position'])
-      .executeTakeFirstOrThrow();
+      .execute();
   }
 }

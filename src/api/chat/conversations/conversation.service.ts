@@ -168,7 +168,8 @@ export class ConversationService {
         contents: promptToAI,
       });
 
-      if (!chatInfo) {
+      // if thread or root chat is created
+      if (data.thread_context || !chatInfo) {
         chatTitle = await this.generateChatTitle({
           model: data.model,
           userInput: data.content,

@@ -13,7 +13,7 @@ export class ThreadContextController {
 
   @ApiOperation({ summary: 'Get thread context by message id' })
   @Get('/messages/:id/thread-context')
-  getThreadContextByMessage(@Param('id') messageId: string): Promise<ThreadContextByMessageIdDto> {
+  getThreadContextByMessage(@Param('id') messageId: string): Promise<ThreadContextByMessageIdDto[]> {
     return this.threadContextService.getThreadContextByMessageId(messageId);
   }
 }
