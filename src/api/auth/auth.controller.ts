@@ -5,7 +5,7 @@ import { AuthCookieService } from './auth-cookie.service';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
 import { GetUser } from 'src/shared/decorators/get-user.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AccessTokenDto, SignInWithGoogleDto, SignUpDto, SingInDto } from './dto/auth.dto';
 
 @ApiTags('Authentication')
@@ -43,16 +43,18 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Refresh access token' })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @Post('/refresh')
-  async refresh(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-    @GetUser('sub') userId: string,
-  ): Promise<AccessTokenDto> {
+  async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<AccessTokenDto> {
     const refreshToken = this.cookieService.getRefreshTokenFromRequest(req);
-    const authResult = await this.authService.refreshAccessToken(userId, refreshToken);
+    const [type, token] = req.headers.authorization?.split(' ') ?? [];
+    const expiredAccessToken = type === 'Bearer' ? token : undefined;
+
+    if (!expiredAccessToken || !refreshToken) {
+      throw new UnauthorizedException('JWT token is required for refresh');
+    }
+
+    const authResult = await this.authService.refreshAccessToken(expiredAccessToken, refreshToken);
+
     this.cookieService.setRefreshTokenCookie(res, authResult.refresh_token);
 
     return { access_token: authResult.access_token };

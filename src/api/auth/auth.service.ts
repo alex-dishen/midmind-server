@@ -96,11 +96,11 @@ export class AuthService implements IAuthService {
     return this.createTokenAndHandleUserSession(dbUser.id);
   }
 
-  async refreshAccessToken(userId: string, refreshToken: string): Promise<TokensOutput> {
-    if (!refreshToken) throw new UnauthorizedException('Refresh token not found');
-
-    const decoded = await this.tokenService.decodeToken(refreshToken);
-    const sessionId = decoded['sub'];
+  async refreshAccessToken(expiredAccessToken: string, refreshToken: string): Promise<TokensOutput> {
+    const decodedRefresh = await this.tokenService.decodeToken(refreshToken);
+    const decodeAccess = await this.tokenService.decodeToken(expiredAccessToken);
+    const sessionId = decodedRefresh['sub'];
+    const userId = decodeAccess['sub'];
 
     try {
       await this.tokenService.verifyRefreshToken(refreshToken);
