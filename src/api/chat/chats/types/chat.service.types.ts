@@ -1,13 +1,13 @@
 export type GetUserNonArchivedChatsOutput = {
   id: string;
   name: string | null;
-  thread_level: number;
+  depth: number;
 };
 
 export type GetChatByIdOutput = {
   id: string;
   path: string[];
   name: string | null;
-  thread_level: number;
+  depth: number;
   root_chat_id: string | null;
 };

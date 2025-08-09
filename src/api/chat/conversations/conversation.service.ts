@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { GeminiService } from 'src/llm/gemini/gemini.service';
 import { MessageRepository } from '../messages/message.repository';
-import { ThreadContextRepository } from '../thread-contexts/thread-context.repository';
+import { BranchContextRepository } from '../branch-contexts/branch-context.repository';
 import { MessageSenderRole } from 'src/db/types/db.types';
 import { ConversationResponseType } from './dto/create-conversation.dto';
 import {
@@ -25,7 +25,7 @@ export class ConversationService {
     private chatRepository: ChatRepository,
     private messageRepository: MessageRepository,
     private conversationRepository: ConversationRepository,
-    private threadContextRepository: ThreadContextRepository,
+    private branchContextRepository: BranchContextRepository,
   ) {}
 
   private async generateAIPrompt(userInput: string, chatId?: string): Promise<GetAIContextOutput[] | string> {
@@ -83,20 +83,20 @@ export class ConversationService {
   private async saveConversationData({ data, fullLlmResponse, llmMessageId, userId, chatTitle }: SaveConversationDataInput) {
     const chat = await this.chatRepository.getChatById(data.chat_id);
 
-    // A conversation was initialized to a non existing chat/thread
+    // A conversation was initialized to a non existing chat/branch
     if (!chat) {
-      let threadLevel = 0;
+      let depth = 0;
       let rootChatId: string | undefined;
       let contextPath: string[] = [data.chat_id];
 
-      // A conversation was initialized in a thread
-      if (data.thread_context) {
-        const parentChat = await this.chatRepository.getChatById(data.thread_context.parent_chat_id);
+      // A conversation was initialized in a branch
+      if (data.branch_context) {
+        const parentChat = await this.chatRepository.getChatById(data.branch_context.parent_chat_id);
 
         if (parentChat) {
-          threadLevel = parentChat.thread_level + 1;
+          depth = parentChat.depth + 1;
           // parentChat may not have root_chat_id as parent might be the root itself
-          rootChatId = parentChat.root_chat_id || data.thread_context.parent_chat_id;
+          rootChatId = parentChat.root_chat_id || data.branch_context.parent_chat_id;
           // parentChat.path = ['root_id', 'parent_chat_id']
           contextPath = [...parentChat.path, data.chat_id];
         }
@@ -108,8 +108,8 @@ export class ConversationService {
         id: data.chat_id,
         path: contextPath,
         root_chat_id: rootChatId,
-        thread_level: threadLevel,
-        parent_chat_id: data.thread_context?.parent_chat_id,
+        depth,
+        parent_chat_id: data.branch_context?.parent_chat_id,
       });
     }
 
@@ -121,7 +121,7 @@ export class ConversationService {
       role: MessageSenderRole.USER,
       // Date is passed because messages are in transaction and they are flushed at the same time. Ruins messages order
       created_at: new Date().toISOString(),
-      parent_message_id: data.thread_context?.parent_message_id,
+      parent_message_id: data.branch_context?.parent_message_id,
     });
 
     await this.messageRepository.createMessage({
@@ -134,30 +134,30 @@ export class ConversationService {
       created_at: new Date().toISOString(),
     });
 
-    if (data.thread_context) {
-      await this.threadContextRepository.createThreadContext({
+    if (data.branch_context) {
+      await this.branchContextRepository.createBranchContext({
         child_chat_id: data.chat_id,
         child_message_id: data.message_id,
-        context_type: data.thread_context?.context_type,
-        end_position: data.thread_context?.end_position,
+        context_type: data.branch_context?.context_type,
+        end_position: data.branch_context?.end_position,
         connection_color: generateRandomPastelHexColor(),
-        selected_text: data.thread_context?.selected_text,
-        parent_chat_id: data.thread_context?.parent_chat_id,
-        start_position: data.thread_context?.start_position,
-        connection_type: data.thread_context?.connection_type,
-        parent_message_id: data.thread_context?.parent_message_id,
+        selected_text: data.branch_context?.selected_text,
+        parent_chat_id: data.branch_context?.parent_chat_id,
+        start_position: data.branch_context?.start_position,
+        connection_type: data.branch_context?.connection_type,
+        parent_message_id: data.branch_context?.parent_message_id,
       });
     }
   }
 
-  // The function handles messages in main chats and threads
+  // The function handles messages in main chats and branchs
   async askAi({ data, userId, onChunk }: AskAiInput): Promise<void> {
     const llmMessageId = randomUUID();
     let chatTitle: string | undefined;
 
     try {
-      // If user creates a thread we need to get parent context as child chat doesn't exist yet
-      const chatInfo = await this.chatRepository.getChatById(data.thread_context?.parent_chat_id || data.chat_id);
+      // If user creates a branch we need to get parent context as child chat doesn't exist yet
+      const chatInfo = await this.chatRepository.getChatById(data.branch_context?.parent_chat_id || data.chat_id);
 
       const promptToAI = await this.generateAIPrompt(data.content, chatInfo?.id);
 
@@ -168,8 +168,8 @@ export class ConversationService {
         contents: promptToAI,
       });
 
-      // if thread or root chat is created
-      if (data.thread_context || !chatInfo) {
+      // if branch or root chat is created
+      if (data.branch_context || !chatInfo) {
         chatTitle = await this.generateChatTitle({
           model: data.model,
           userInput: data.content,

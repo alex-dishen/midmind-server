@@ -9,7 +9,7 @@ export enum ConversationResponseType {
   COMPLETE = 'complete',
 }
 
-class ConversationThreadContextDto {
+class ConversationBranchContextDto {
   @IsUUID()
   parent_chat_id: string;
 
@@ -49,7 +49,7 @@ export class CreateConversationDto {
   model: GeminiModels;
 
   @IsOptional()
-  thread_context?: ConversationThreadContextDto;
+  branch_context?: ConversationBranchContextDto;
 }
 
 export class CreateConversationResponseCompleteDto {

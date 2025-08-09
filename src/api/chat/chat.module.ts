@@ -6,16 +6,16 @@ import { ChatRepository } from 'src/api/chat/chats/chat.repository';
 import { MessageService } from 'src/api/chat/messages/message.service';
 import { MessageController } from 'src/api/chat/messages/message.controller';
 import { MessageRepository } from 'src/api/chat/messages/message.repository';
-import { ThreadContextRepository } from './thread-contexts/thread-context.repository';
+import { BranchContextRepository } from './branch-contexts/branch-context.repository';
 import { ConversationController } from './conversations/conversation.controller';
 import { ConversationService } from './conversations/conversation.service';
-import { ThreadContextController } from './thread-contexts/thread-context.controller';
-import { ThreadContextService } from './thread-contexts/thread-context.service';
+import { BranchContextController } from './branch-contexts/branch-context.controller';
+import { BranchContextService } from './branch-contexts/branch-context.service';
 import { ConversationRepository } from './conversations/conversation.repository';
 
 @Module({
   imports: [LLMModule],
-  controllers: [ConversationController, ChatController, MessageController, ThreadContextController],
+  controllers: [ConversationController, ChatController, MessageController, BranchContextController],
   providers: [
     ConversationService,
     ConversationRepository,
@@ -23,8 +23,8 @@ import { ConversationRepository } from './conversations/conversation.repository'
     ChatService,
     MessageRepository,
     MessageService,
-    ThreadContextRepository,
-    ThreadContextService,
+    BranchContextRepository,
+    BranchContextService,
   ],
 })
 export class ChatModule {}

@@ -1,5 +1,5 @@
 // Auto-generated CRUD types for Kysely
-// Generated at 2025-07-31T08:29:09.526Z
+// Generated at 2025-08-08T20:28:51.777Z
 
 import type { ColumnType, Generated, Selectable, Insertable, Updateable } from 'kysely';
 
@@ -45,7 +45,7 @@ type ChatTable = {
   user_id: string;
   root_chat_id: string | null;
   name: string | null;
-  thread_level: Generated<number>;
+  depth: Generated<number>;
   created_at: ColumnType<Date, Date | string | undefined, Date | string>;
   updated_at: ColumnType<Date, Date | string | undefined, Date | string>;
   is_deleted: Generated<boolean>;
@@ -72,7 +72,7 @@ export type MessageGetOutput = Selectable<MessageTable>;
 export type MessageCreateInput = Insertable<MessageTable>;
 export type MessageUpdateInput = Updateable<MessageTable>;
 
-type ThreadContextTable = {
+type BranchContextTable = {
   id: Generated<string>;
   child_chat_id: string;
   parent_chat_id: string;
@@ -86,13 +86,13 @@ type ThreadContextTable = {
   connection_type: ConnectionType;
   connection_color: string;
 };
-export type ThreadContextGetOutput = Selectable<ThreadContextTable>;
-export type ThreadContextCreateInput = Insertable<ThreadContextTable>;
-export type ThreadContextUpdateInput = Updateable<ThreadContextTable>;
+export type BranchContextGetOutput = Selectable<BranchContextTable>;
+export type BranchContextCreateInput = Insertable<BranchContextTable>;
+export type BranchContextUpdateInput = Updateable<BranchContextTable>;
 
 export type DB = {
   users: UserTable;
   chats: ChatTable;
   messages: MessageTable;
-  thread_contexts: ThreadContextTable;
+  branch_contexts: BranchContextTable;
 };

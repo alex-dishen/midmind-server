@@ -24,7 +24,7 @@ export class MessageRepository {
         'created_at',
         jsonArrayFrom(
           eb
-            .selectFrom('thread_contexts as tc')
+            .selectFrom('branch_contexts as tc')
             .select([
               'tc.id',
               'tc.child_chat_id',
@@ -36,7 +36,7 @@ export class MessageRepository {
             ])
             .whereRef('m.id', '=', 'tc.parent_message_id')
             .orderBy('created_at'),
-        ).as('threads'),
+        ).as('branches'),
       ])
       .where('chat_id', '=', chatId)
       .orderBy('created_at', 'desc');

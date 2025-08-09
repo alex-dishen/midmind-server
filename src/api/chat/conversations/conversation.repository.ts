@@ -12,8 +12,8 @@ export class ConversationRepository {
         qb
           // Base case: current chat
           .selectFrom('chats')
-          .leftJoin('thread_contexts', 'thread_contexts.child_chat_id', 'chats.id')
-          .leftJoin('messages as parent_msg', 'parent_msg.id', 'thread_contexts.parent_message_id')
+          .leftJoin('branch_contexts', 'branch_contexts.child_chat_id', 'chats.id')
+          .leftJoin('messages as parent_msg', 'parent_msg.id', 'branch_contexts.parent_message_id')
           .select([
             'chats.id as chat_id',
             'chats.parent_chat_id',
@@ -26,8 +26,8 @@ export class ConversationRepository {
             qb
               .selectFrom('chats')
               .innerJoin('chat_path', 'chats.id', 'chat_path.parent_chat_id')
-              .leftJoin('thread_contexts', 'thread_contexts.child_chat_id', 'chat_path.chat_id')
-              .leftJoin('messages as cutoff_msg', 'cutoff_msg.id', 'thread_contexts.parent_message_id')
+              .leftJoin('branch_contexts', 'branch_contexts.child_chat_id', 'chat_path.chat_id')
+              .leftJoin('messages as cutoff_msg', 'cutoff_msg.id', 'branch_contexts.parent_message_id')
               .select([
                 'chats.id as chat_id',
                 'chats.parent_chat_id',

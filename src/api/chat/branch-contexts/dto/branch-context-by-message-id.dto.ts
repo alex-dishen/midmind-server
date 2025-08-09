@@ -1,7 +1,7 @@
 import { IsUUID } from 'class-validator';
 import { ContextType } from 'src/db/types/db.types';
 
-export class ThreadContextByMessageIdDto {
+export class BranchContextByMessageIdDto {
   @IsUUID()
   id: string;
   @IsUUID()

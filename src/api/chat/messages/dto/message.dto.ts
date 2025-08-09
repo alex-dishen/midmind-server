@@ -1,7 +1,7 @@
 import { IsUUID } from 'class-validator';
 import { ContextType, MessageSenderRole } from 'src/db/types/db.types';
 
-class AppMessageThreadDto {
+class AppMessageBranchDto {
   @IsUUID()
   id: string;
   @IsUUID()
@@ -22,5 +22,5 @@ export class AppMessageDto {
   created_at: Date;
   role: MessageSenderRole;
   llm_model: string | null;
-  threads: AppMessageThreadDto[];
+  branches: AppMessageBranchDto[];
 }

@@ -1,11 +1,11 @@
-import { ThreadContextGetOutput } from 'src/db/types/db.types';
+import { BranchContextGetOutput } from 'src/db/types/db.types';
 
-export type CreateThreadContextOutput = Pick<
-  ThreadContextGetOutput,
+export type CreateBranchContextOutput = Pick<
+  BranchContextGetOutput,
   'id' | 'connection_color' | 'context_type' | 'end_position' | 'start_position' | 'connection_type'
 >;
 
-export type GetThreadContextByOutput = Pick<
-  ThreadContextGetOutput,
+export type GetBranchContextByOutput = Pick<
+  BranchContextGetOutput,
   'id' | 'connection_color' | 'context_type' | 'end_position' | 'start_position' | 'connection_type' | 'child_chat_id'
 >;

@@ -14,18 +14,18 @@ export class ChatRepository {
       qb = qb.where(key as keyof ChatGetOutput, '=', value);
     }
 
-    return qb.select(['id', 'name', 'thread_level']).orderBy('created_at', 'desc').execute();
+    return qb.select(['id', 'name', 'depth']).orderBy('created_at', 'desc').execute();
   }
 
   createChat(data: ChatCreateInput): Promise<ChatData> {
-    return this.kysely.db.insertInto('chats').values(data).returning(['id', 'name', 'thread_level']).executeTakeFirstOrThrow();
+    return this.kysely.db.insertInto('chats').values(data).returning(['id', 'name', 'depth']).executeTakeFirstOrThrow();
   }
 
   getChatById(chatId: string): Promise<GetChatByIdOutput | undefined> {
     return this.kysely.db
       .selectFrom('chats')
       .where('id', '=', chatId)
-      .select(['id', 'name', 'thread_level', 'root_chat_id', 'path'])
+      .select(['id', 'name', 'depth', 'root_chat_id', 'path'])
       .executeTakeFirst();
   }
 
