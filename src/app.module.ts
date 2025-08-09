@@ -8,6 +8,7 @@ import { UserModule } from 'src/api/user/user.module';
 import { ChatModule } from 'src/api/chat/chat.module';
 import { AppConfigModule } from 'src/shared/services/config-service/config.module';
 import { validateEnv } from 'src/shared/services/config-service/env-variables/validate-env';
+import { DirectoryModule } from './api/directory/directory.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { validateEnv } from 'src/shared/services/config-service/env-variables/va
     RedisModule,
     AuthModule,
     UserModule,
+    DirectoryModule,
     ChatModule,
     LLMModule,
   ],

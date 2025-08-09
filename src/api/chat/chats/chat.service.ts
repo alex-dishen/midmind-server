@@ -17,8 +17,7 @@ export class ChatService {
   async updateChat(chatId: string, data: UpdateChatDto): Promise<void> {
     await this.chatRepository.updateChat(chatId, { ...data, updated_at: new Date().toISOString() });
   }
-
   async deleteChat(chatId: string): Promise<void> {
-    await this.chatRepository.updateChat(chatId, { is_deleted: true, deleted_at: new Date().toISOString() });
+    await this.chatRepository.updateChatsByPathChatId(chatId, { is_deleted: true, deleted_at: new Date().toISOString() });
   }
 }

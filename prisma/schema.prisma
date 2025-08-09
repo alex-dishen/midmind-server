@@ -28,6 +28,11 @@ enum ContextType {
   TEXT_SELECTION @map("text_selection")
 }
 
+enum DirectoryType {
+  FOLDER  @map("folder")
+  MINDLET @map("mindlet")
+}
+
 model User {
   id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email       String        @unique
@@ -40,10 +45,37 @@ model User {
   created_at  DateTime      @default(now())
   updated_at  DateTime?     @updatedAt
 
-  chats    Chat[]
-  messages Message[]
+  chats       Chat[]
+  messages    Message[]
+  directories Directory[]
 
   @@map("users")
+}
+
+model Directory {
+  id                  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  root_directory_id   String? @db.Uuid
+  parent_directory_id String? @db.Uuid
+  user_id             String  @db.Uuid
+
+  name       String
+  depth      Int           @default(0)
+  created_at DateTime      @default(now())
+  updated_at DateTime?
+  is_deleted Boolean       @default(false)
+  deleted_at DateTime?
+  type       DirectoryType
+  path       String[] //  JSON array of directory IDs from root to current directory: ["root_id", "child1_id", "current_id"]
+
+  chats                 Chat[]
+  user                  User        @relation(fields: [user_id], references: [id])
+  rootDirectory         Directory?  @relation("RootDirectoryRelation", fields: [root_directory_id], references: [id])
+  descendantDirectories Directory[] @relation("RootDirectoryRelation")
+  parentDirectory       Directory?  @relation("DirectoryHierarchy", fields: [parent_directory_id], references: [id])
+  childDirectories      Directory[] @relation("DirectoryHierarchy")
+
+  @@index([user_id], map: "directory_user_id_idx")
+  @@map("directories")
 }
 
 model Chat {
@@ -51,8 +83,9 @@ model Chat {
   parent_chat_id String? @db.Uuid
   user_id        String  @db.Uuid
   root_chat_id   String? @db.Uuid
+  directory_id   String? @db.Uuid
 
-  name       String? // Null for first messages
+  name       String
   depth      Int       @default(0)
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
@@ -64,6 +97,7 @@ model Chat {
 
   // Relations & Prisma related
   user                User            @relation(fields: [user_id], references: [id])
+  directory           Directory?      @relation(fields: [directory_id], references: [id])
   rootChat            Chat?           @relation("RootChatRelation", fields: [root_chat_id], references: [id])
   descendantChats     Chat[]          @relation("RootChatRelation")
   parentChat          Chat?           @relation("ChatHierarchy", fields: [parent_chat_id], references: [id])
@@ -73,8 +107,7 @@ model Chat {
   parentBranchContext BranchContext[] @relation("ParentBranchContext")
 
   @@index([user_id], map: "chat_user_id_idx")
-  @@index([parent_chat_id], map: "chat_parent_id_idx")
-  @@index([root_chat_id], map: "chat_root_id_idx")
+  @@index([directory_id], map: "chat_directory_id_idx")
   @@map("chats")
 }
 

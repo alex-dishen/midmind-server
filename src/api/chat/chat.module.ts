@@ -26,5 +26,6 @@ import { ConversationRepository } from './conversations/conversation.repository'
     BranchContextRepository,
     BranchContextService,
   ],
+  exports: [ChatRepository],
 })
 export class ChatModule {}

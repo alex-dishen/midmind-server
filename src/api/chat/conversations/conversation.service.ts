@@ -153,7 +153,7 @@ export class ConversationService {
   // The function handles messages in main chats and branchs
   async askAi({ data, userId, onChunk }: AskAiInput): Promise<void> {
     const llmMessageId = randomUUID();
-    let chatTitle: string | undefined;
+    let chatTitle = 'New conversation';
 
     try {
       // If user creates a branch we need to get parent context as child chat doesn't exist yet

@@ -1,5 +1,5 @@
 // Auto-generated CRUD types for Kysely
-// Generated at 2025-08-09T10:57:47.285Z
+// Generated at 2025-08-09T10:59:53.600Z
 
 import type { ColumnType, Generated, Selectable, Insertable, Updateable } from 'kysely';
 
@@ -23,6 +23,11 @@ export enum ContextType {
   TEXT_SELECTION = 'text_selection',
 }
 
+export enum DirectoryType {
+  FOLDER = 'folder',
+  MINDLET = 'mindlet',
+}
+
 type UserTable = {
   id: Generated<string>;
   email: string;
@@ -39,12 +44,31 @@ export type UserGetOutput = Selectable<UserTable>;
 export type UserCreateInput = Insertable<UserTable>;
 export type UserUpdateInput = Updateable<UserTable>;
 
+type DirectoryTable = {
+  id: Generated<string>;
+  root_directory_id: string | null;
+  parent_directory_id: string | null;
+  user_id: string;
+  name: string;
+  depth: Generated<number>;
+  created_at: ColumnType<Date, Date | string | undefined, Date | string>;
+  updated_at: ColumnType<Date, Date | string | undefined, Date | string>;
+  is_deleted: Generated<boolean>;
+  deleted_at: ColumnType<Date, Date | string | undefined, Date | string>;
+  type: DirectoryType;
+  path: string[];
+};
+export type DirectoryGetOutput = Selectable<DirectoryTable>;
+export type DirectoryCreateInput = Insertable<DirectoryTable>;
+export type DirectoryUpdateInput = Updateable<DirectoryTable>;
+
 type ChatTable = {
   id: Generated<string>;
   parent_chat_id: string | null;
   user_id: string;
   root_chat_id: string | null;
-  name: string | null;
+  directory_id: string | null;
+  name: string;
   depth: Generated<number>;
   created_at: ColumnType<Date, Date | string | undefined, Date | string>;
   updated_at: ColumnType<Date, Date | string | undefined, Date | string>;
@@ -92,6 +116,7 @@ export type BranchContextUpdateInput = Updateable<BranchContextTable>;
 
 export type DB = {
   users: UserTable;
+  directories: DirectoryTable;
   chats: ChatTable;
   messages: MessageTable;
   branch_contexts: BranchContextTable;
