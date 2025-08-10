@@ -91,12 +91,16 @@ export class DirectoryService {
     }
   }
 
+  async getDirectoriesByParentId(parentDirectoryId?: string) {
+    return this.directoryRepository.getDirectoriesBy({ is_deleted: false, parent_directory_id: parentDirectoryId });
+  }
+
   @Transaction()
   async deleteDirectory(directoryId: string): Promise<void> {
     const fetchedDirectoryIds = await this.directoryRepository.getDirectoryIdsByPathId(directoryId);
     const directoryIds = fetchedDirectoryIds.map(fdi => fdi.id);
 
-    await this.directoryRepository.updateDirectoryByIds(directoryIds, {
+    await this.directoryRepository.updateDirectoriesByIds(directoryIds, {
       is_deleted: true,
       deleted_at: new Date().toISOString(),
     });

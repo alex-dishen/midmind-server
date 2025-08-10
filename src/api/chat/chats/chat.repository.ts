@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/db/db.service';
-import { ChatData, GetChatByIdOutput } from './types/chat.repository.types';
+import { GetChatsByOutput, GetChatByIdOutput } from './types/chat.repository.types';
 import { ChatCreateInput, ChatGetOutput, ChatUpdateInput } from 'src/db/types/db.types';
 import { sql } from 'kysely';
 
@@ -8,8 +8,8 @@ import { sql } from 'kysely';
 export class ChatRepository {
   constructor(private kysely: DatabaseService) {}
 
-  createChat(data: ChatCreateInput): Promise<ChatData> {
-    return this.kysely.db.insertInto('chats').values(data).returning(['id', 'name', 'depth']).executeTakeFirstOrThrow();
+  async createChat(data: ChatCreateInput): Promise<void> {
+    await this.kysely.db.insertInto('chats').values(data).executeTakeFirstOrThrow();
   }
 
   async updateChat(chatId: string, data: ChatUpdateInput): Promise<void> {
@@ -28,14 +28,24 @@ export class ChatRepository {
       .execute();
   }
 
-  getChatsBy(where: Partial<ChatGetOutput>): Promise<ChatData[]> {
+  getChatsBy(where: Partial<ChatGetOutput>): Promise<GetChatsByOutput[]> {
     let qb = this.kysely.db.selectFrom('chats');
 
     for (const [key, value] of Object.entries(where)) {
-      qb = qb.where(key as keyof ChatGetOutput, '=', value);
+      if (value !== undefined && value !== null) {
+        qb = qb.where(key as keyof ChatGetOutput, '=', value);
+      }
     }
 
-    return qb.select(['id', 'name', 'depth']).orderBy('created_at', 'desc').execute();
+    return qb
+      .select([
+        'id',
+        'name',
+        'directory_id',
+        sql<boolean>`EXISTS (SELECT 1 FROM chats c2 WHERE c2.parent_chat_id = chats.id)`.as('has_children'),
+      ])
+      .orderBy('created_at', 'desc')
+      .execute();
   }
 
   getChatById(chatId: string): Promise<GetChatByIdOutput | undefined> {

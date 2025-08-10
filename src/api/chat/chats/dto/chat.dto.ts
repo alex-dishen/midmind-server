@@ -1,8 +1,16 @@
-import { IsUUID } from 'class-validator';
+import { IsOptional, IsUUID } from 'class-validator';
+
+export class GetChatQueryDto {
+  @IsUUID()
+  @IsOptional()
+  parent_directory_id?: string;
+}
 
 export class ChatDto {
   @IsUUID()
   id: string;
 
-  name: string | null;
+  name: string;
+  parent_directory_id: string | null;
+  has_children: boolean;
 }

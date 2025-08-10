@@ -1,7 +1,8 @@
 export type GetUserNonArchivedChatsOutput = {
   id: string;
-  name: string | null;
-  depth: number;
+  name: string;
+  directory_id: string | null;
+  has_children: boolean;
 };
 
 export type GetChatByIdOutput = {

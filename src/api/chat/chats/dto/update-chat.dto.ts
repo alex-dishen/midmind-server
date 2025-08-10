@@ -4,4 +4,8 @@ export class UpdateChatDto {
   @IsOptional()
   @IsString()
   name?: string;
+
+  @IsOptional()
+  @IsString()
+  directory_id?: string;
 }

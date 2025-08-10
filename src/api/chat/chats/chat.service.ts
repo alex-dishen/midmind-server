@@ -6,8 +6,8 @@ import { GetChatByIdOutput, GetUserNonArchivedChatsOutput } from './types/chat.s
 @Injectable()
 export class ChatService {
   constructor(private chatRepository: ChatRepository) {}
-  getUserNonArchivedChats(userId: string): Promise<GetUserNonArchivedChatsOutput[]> {
-    return this.chatRepository.getChatsBy({ user_id: userId, is_deleted: false });
+  getUserNonArchivedChats(userId: string, parentDirectoryId?: string): Promise<GetUserNonArchivedChatsOutput[]> {
+    return this.chatRepository.getChatsBy({ user_id: userId, is_deleted: false, directory_id: parentDirectoryId });
   }
 
   getChatById(chatId: string): Promise<GetChatByIdOutput | undefined> {

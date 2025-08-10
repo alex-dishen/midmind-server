@@ -1,11 +1,11 @@
 import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { MessageDto } from 'src/shared/dtos/message.dto';
-import { ChatDto } from 'src/api/chat/chats/dto/chat.dto';
+import { ChatDto, GetChatQueryDto } from 'src/api/chat/chats/dto/chat.dto';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
 import { GetUser } from 'src/shared/decorators/get-user.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
 import { ChatDtoMapper } from './mappers/chat.dto.mapper';
 
 @ApiTags('Chats')
@@ -17,15 +17,15 @@ export class ChatController {
 
   @ApiOperation({ summary: 'Get all user not deleted chats' })
   @Get()
-  async getUserChats(@GetUser('sub') userId: string): Promise<ChatDto[]> {
-    const userChats = await this.chatService.getUserNonArchivedChats(userId);
+  async getUserChats(@Query() query: GetChatQueryDto, @GetUser('sub') userId: string): Promise<ChatDto[]> {
+    const userChats = await this.chatService.getUserNonArchivedChats(userId, query.parent_directory_id);
 
     return ChatDtoMapper.toUserChatsDto(userChats);
   }
 
   @ApiOperation({ summary: 'Update a chat data' })
   @Put('/:id')
-  async updateChatData(@Param('id') chatId: string, @Body() data: UpdateChatDto): Promise<MessageDto> {
+  async updateChat(@Param('id') chatId: string, @Body() data: UpdateChatDto): Promise<MessageDto> {
     await this.chatService.updateChat(chatId, data);
 
     return { message: 'Successfully updated the chat' };
