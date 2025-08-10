@@ -32,7 +32,9 @@ export class ChatRepository {
     let qb = this.kysely.db.selectFrom('chats');
 
     for (const [key, value] of Object.entries(where)) {
-      if (value !== undefined && value !== null) {
+      if (value === null) {
+        qb = qb.where(key as keyof ChatGetOutput, 'is', null);
+      } else if (value !== undefined) {
         qb = qb.where(key as keyof ChatGetOutput, '=', value);
       }
     }

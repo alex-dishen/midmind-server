@@ -32,7 +32,9 @@ export class DirectoryRepository {
     let qb = this.kysely.db.selectFrom('directories');
 
     for (const [key, value] of Object.entries(where)) {
-      if (value !== undefined && value !== null) {
+      if (value === null) {
+        qb = qb.where(key as keyof DirectoryGetOutput, 'is', null);
+      } else if (value !== undefined) {
         qb = qb.where(key as keyof DirectoryGetOutput, '=', value as never);
       }
     }

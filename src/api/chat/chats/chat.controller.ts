@@ -17,8 +17,8 @@ export class ChatController {
 
   @ApiOperation({ summary: 'Get all user not deleted chats' })
   @Get()
-  async getUserChats(@Query() query: GetChatQueryDto, @GetUser('sub') userId: string): Promise<ChatDto[]> {
-    const userChats = await this.chatService.getUserNonArchivedChats(userId, query.parent_directory_id);
+  async getUserChats(@Query() queryParams: GetChatQueryDto, @GetUser('sub') userId: string): Promise<ChatDto[]> {
+    const userChats = await this.chatService.getUserNonArchivedChats(userId, queryParams);
 
     return ChatDtoMapper.toUserChatsDto(userChats);
   }
