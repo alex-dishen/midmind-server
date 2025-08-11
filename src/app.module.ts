@@ -9,6 +9,7 @@ import { ChatModule } from 'src/api/chat/chat.module';
 import { AppConfigModule } from 'src/shared/services/config-service/config.module';
 import { validateEnv } from 'src/shared/services/config-service/env-variables/validate-env';
 import { DirectoryModule } from './api/directory/directory.module';
+import { BreadcrumbsModule } from './api/breadcrumbs/breadcrumbs.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DirectoryModule } from './api/directory/directory.module';
     UserModule,
     DirectoryModule,
     ChatModule,
+    BreadcrumbsModule,
     LLMModule,
   ],
   controllers: [],

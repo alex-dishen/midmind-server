@@ -2,7 +2,7 @@ import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
 import { GetUser } from 'src/shared/decorators/get-user.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
-import { CreateDirectoryDto } from './dto/create-direcotry.dto';
+import { CreateDirectoryDto } from './dto/create-directory.dto';
 import { DirectoryService } from './directory.service';
 import { UpdateDirectoryDto } from './dto/update-directory.dto';
 import { MessageDto } from 'src/shared/dtos/message.dto';

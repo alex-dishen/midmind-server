@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { DirectoryRepository } from './directory.repository';
 import { DirectoryUpdateInput } from 'src/db/types/db.types';
 import { ChatRepository } from '../chat/chats/chat.repository';
-import { CreateDirectoryDto } from './dto/create-direcotry.dto';
+import { CreateDirectoryDto } from './dto/create-directory.dto';
 import { UpdateDirectoryDto } from './dto/update-directory.dto';
 import { Transaction } from 'src/db/transactions/transaction.decorator';
 import { ChangeDirectoryLocationRequestDto } from './dto/change-directory-location.dto';
+import { GetDirectoriesByParentIdOutput } from './types/directory.service.types';
 
 @Injectable()
 export class DirectoryService {
@@ -14,7 +15,7 @@ export class DirectoryService {
     private directoryRepository: DirectoryRepository,
   ) {}
 
-  async createDirectory(userId: string, data: CreateDirectoryDto) {
+  async createDirectory(userId: string, data: CreateDirectoryDto): Promise<void> {
     let parentDirectory;
 
     if (data.parent_directory_id) {
@@ -91,7 +92,7 @@ export class DirectoryService {
     }
   }
 
-  async getDirectoriesByParentId(userId: string, parentDirectoryId?: string) {
+  async getDirectoriesByParentId(userId: string, parentDirectoryId?: string): Promise<GetDirectoriesByParentIdOutput[]> {
     return this.directoryRepository.getDirectoriesBy({
       user_id: userId,
       is_deleted: false,
