@@ -42,6 +42,10 @@ export class CreateConversationDto {
   @IsUUID()
   message_id: string;
 
+  @IsUUID()
+  @IsOptional()
+  directory_id: string;
+
   @IsString()
   content: string;
 

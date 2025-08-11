@@ -103,12 +103,13 @@ export class ConversationService {
       }
 
       await this.chatRepository.createChat({
+        depth,
         user_id: userId,
         name: chatTitle,
         id: data.chat_id,
         path: contextPath,
         root_chat_id: rootChatId,
-        depth,
+        directory_id: data.directory_id,
         parent_chat_id: data.branch_context?.parent_chat_id,
       });
     }
