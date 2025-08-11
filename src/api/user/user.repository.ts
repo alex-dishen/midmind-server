@@ -1,6 +1,5 @@
 import { DatabaseService } from 'src/db/db.service';
 import { Injectable } from '@nestjs/common';
-import { PaginatedResult, PaginateOptions } from 'src/shared/dtos/pagination.dto';
 import { UserCreateInput, UserGetOutput, UserUpdateInput } from 'src/db/types/db.types';
 
 @Injectable()
@@ -21,17 +20,7 @@ export class UserRepository {
     return qb.selectAll().executeTakeFirst();
   }
 
-  getUsersAll({ skip, take }: PaginateOptions): Promise<PaginatedResult<UserGetOutput>> {
-    const qb = this.kysely.db.selectFrom('users').selectAll();
-
-    return this.kysely.paginate(qb, { take, skip });
-  }
-
   async updateUser(userId: string, data: UserUpdateInput): Promise<void> {
     await this.kysely.db.updateTable('users').set(data).where('id', '=', userId).execute();
-  }
-
-  async deleteUser(userId: string): Promise<void> {
-    await this.kysely.db.deleteFrom('users').where('id', '=', userId).execute();
   }
 }
