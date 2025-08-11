@@ -91,8 +91,12 @@ export class DirectoryService {
     }
   }
 
-  async getDirectoriesByParentId(parentDirectoryId?: string) {
-    return this.directoryRepository.getDirectoriesBy({ is_deleted: false, parent_directory_id: parentDirectoryId || null });
+  async getDirectoriesByParentId(userId: string, parentDirectoryId?: string) {
+    return this.directoryRepository.getDirectoriesBy({
+      user_id: userId,
+      is_deleted: false,
+      parent_directory_id: parentDirectoryId || null,
+    });
   }
 
   @Transaction()

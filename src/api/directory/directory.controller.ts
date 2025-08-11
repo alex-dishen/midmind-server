@@ -45,8 +45,8 @@ export class DirectoryController {
 
   @ApiOperation({ summary: 'Get root or nested directories by passing or omitting parentId param' })
   @Get()
-  async getDirectories(@Query() query: GetDirectoryQueryDto): Promise<GetDirectoryDto[]> {
-    return this.directoryService.getDirectoriesByParentId(query.parent_id);
+  async getDirectories(@GetUser('sub') userId: string, @Query() query: GetDirectoryQueryDto): Promise<GetDirectoryDto[]> {
+    return this.directoryService.getDirectoriesByParentId(userId, query.parent_id);
   }
 
   @ApiOperation({ summary: 'Delete a directory' })
