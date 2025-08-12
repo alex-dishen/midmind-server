@@ -7,6 +7,7 @@ import { MessageSenderRole } from 'src/db/types/db.types';
 import { ConversationResponseType } from './dto/create-conversation.dto';
 import {
   AskAiInput,
+  GenerateAIPromptInput,
   GenerateChatTitleOutput,
   GetAIContextOutput,
   SaveConversationDataInput,
@@ -17,6 +18,7 @@ import { ChatRepository } from '../chats/chat.repository';
 import { Transaction } from 'src/db/transactions/transaction.decorator';
 import { ConversationRepository } from './conversation.repository';
 import { titlePrompt } from 'src/llm/prompts/title';
+import { MessageReplyRepository } from '../messages/message-reply.repository';
 
 @Injectable()
 export class ConversationService {
@@ -24,12 +26,13 @@ export class ConversationService {
     private geminiService: GeminiService,
     private chatRepository: ChatRepository,
     private messageRepository: MessageRepository,
+    private messageReplyRepository: MessageReplyRepository,
     private conversationRepository: ConversationRepository,
     private branchContextRepository: BranchContextRepository,
   ) {}
 
-  private async generateAIPrompt(userInput: string, chatId?: string): Promise<GetAIContextOutput[] | string> {
-    // If there is not chatId it means the root chat was created
+  private async generateAIPrompt({ userInput, chatId, replyTo }: GenerateAIPromptInput): Promise<GetAIContextOutput[] | string> {
+    // If there is no chatId it means the root chat was created
     if (!chatId) {
       return userInput;
     }
@@ -41,13 +44,24 @@ export class ConversationService {
       parts: [{ text: message.content }],
     }));
 
-    return [...result, { role: MessageSenderRole.USER, parts: [{ text: userInput }] }];
+    return [
+      ...result,
+      {
+        role: MessageSenderRole.USER,
+        parts: [
+          { text: 'Give short answer' },
+          { text: userInput },
+          ...(replyTo ? [{ text: `The user is referring to this in particular:\n${replyTo}` }] : []),
+        ],
+      },
+    ];
   }
 
   private async streamLLMResponse({ llmMessageId, contents, model, onChunk }: StreamLLMResponseInput): Promise<string> {
     const chunks = await this.geminiService.askGeminiWithStream({
       contents,
       model: model,
+      config: { temperature: 0.7 },
     });
 
     let fullResponse = '';
@@ -135,6 +149,14 @@ export class ConversationService {
       created_at: new Date().toISOString(),
     });
 
+    if (data.reply_to) {
+      await this.messageReplyRepository.createMessageReply({
+        message_id: data.message_id,
+        message_id_replied_to: data.reply_to.id,
+        reply_content: data.reply_to.content,
+      });
+    }
+
     if (data.branch_context) {
       await this.branchContextRepository.createBranchContext({
         child_chat_id: data.chat_id,
@@ -160,7 +182,11 @@ export class ConversationService {
       // If user creates a branch we need to get parent context as child chat doesn't exist yet
       const chatInfo = await this.chatRepository.getChatById(data.branch_context?.parent_chat_id || data.chat_id);
 
-      const promptToAI = await this.generateAIPrompt(data.content, chatInfo?.id);
+      const promptToAI = await this.generateAIPrompt({
+        userInput: data.content,
+        chatId: chatInfo?.id,
+        replyTo: data.reply_to?.content,
+      });
 
       const fullLlmResponse = await this.streamLLMResponse({
         onChunk,

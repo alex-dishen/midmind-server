@@ -4,8 +4,10 @@ import { ContextType, MessageSenderRole } from 'src/db/types/db.types';
 class AppMessageBranchDto {
   @IsUUID()
   id: string;
+
   @IsUUID()
   child_chat_id: string;
+
   connection_type: string;
   connection_color: string;
   context_type: ContextType;
@@ -22,5 +24,6 @@ export class AppMessageDto {
   created_at: Date;
   role: MessageSenderRole;
   llm_model: string | null;
+  reply_content: string | null;
   branches: AppMessageBranchDto[];
 }

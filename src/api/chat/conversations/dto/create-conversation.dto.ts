@@ -35,6 +35,14 @@ class ConversationBranchContextDto {
   context_type: ContextType;
 }
 
+export class ReplyToDto {
+  @IsUUID()
+  id: string;
+
+  @IsString()
+  content: string;
+}
+
 export class CreateConversationDto {
   @IsUUID()
   chat_id: string;
@@ -44,13 +52,16 @@ export class CreateConversationDto {
 
   @IsUUID()
   @IsOptional()
-  directory_id: string;
+  directory_id?: string;
+
+  @IsEnum(GeminiModels)
+  model: GeminiModels;
 
   @IsString()
   content: string;
 
-  @IsEnum(GeminiModels)
-  model: GeminiModels;
+  @IsOptional()
+  reply_to?: ReplyToDto;
 
   @IsOptional()
   branch_context?: ConversationBranchContextDto;

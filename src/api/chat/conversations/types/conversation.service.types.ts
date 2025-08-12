@@ -17,6 +17,12 @@ type OnChunkT = (
     | CreateConversationResponseTitleDto,
 ) => void;
 
+export type GenerateAIPromptInput = {
+  userInput: string;
+  replyTo?: string;
+  chatId?: string;
+};
+
 export type GenerateChatTitleOutput = {
   userInput: string;
   model: GeminiModels;
