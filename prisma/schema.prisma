@@ -67,6 +67,7 @@ model Directory {
   type       DirectoryType
   path       String[] //  JSON array of directory IDs from root to current directory: ["root_id", "child1_id", "current_id"]
 
+  // Relations & Prisma related
   chats                 Chat[]
   user                  User        @relation(fields: [user_id], references: [id])
   rootDirectory         Directory?  @relation("RootDirectoryRelation", fields: [root_directory_id], references: [id])
@@ -129,9 +130,26 @@ model Message {
   childMessages       Message[]       @relation("MessageHierarchy")
   childBranchContext  BranchContext?  @relation("ChildMessageContext")
   parentBranchContext BranchContext[] @relation("ParentMessageContext")
+  messagesWithReply   MessageReply[]  @relation("MessageWithReply")
+  messagesRepliedTo   MessageReply[]  @relation("MessageRepliedTo")
 
   @@index([chat_id], map: "message_chat_id_idx")
   @@map("messages")
+}
+
+model MessageReply {
+  id                    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  message_id            String @db.Uuid
+  message_id_replied_to String @db.Uuid
+
+  reply_content String
+
+  // Relations & Prisma related
+  messageWithReply Message @relation("MessageWithReply", fields: [message_id], references: [id])
+  messageRepliedTo Message @relation("MessageRepliedTo", fields: [message_id_replied_to], references: [id])
+
+  @@unique([message_id, message_id_replied_to])
+  @@map("message_replies")
 }
 
 model BranchContext {

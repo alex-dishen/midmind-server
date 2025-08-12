@@ -6,6 +6,7 @@ export type GetChatMessagesOutput = {
   created_at: Date;
   role: MessageSenderRole;
   llm_model: string | null;
+  reply_content: string | null;
   branches: {
     id: string;
     child_chat_id: string;

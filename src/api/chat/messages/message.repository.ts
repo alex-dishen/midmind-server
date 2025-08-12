@@ -16,23 +16,27 @@ export class MessageRepository {
   getChatMessages(chatId: string, pagination: PaginateOptions): Promise<PaginatedResult<MessageData>> {
     const qb = this.kysely.db
       .selectFrom('messages as m')
+      .leftJoin('message_replies as mr', 'mr.message_id', 'm.id')
       .select(eb => [
-        'id',
-        'content',
-        'role',
-        'llm_model',
-        'created_at',
+        'm.id',
+        'm.role',
+        'm.content',
+        'm.llm_model',
+        'm.created_at',
+
+        'mr.reply_content',
+
         jsonArrayFrom(
           eb
             .selectFrom('branch_contexts as tc')
             .select([
               'tc.id',
-              'tc.child_chat_id',
-              'tc.connection_type',
-              'tc.connection_color',
               'tc.context_type',
               'tc.end_position',
+              'tc.child_chat_id',
               'tc.start_position',
+              'tc.connection_type',
+              'tc.connection_color',
             ])
             .whereRef('m.id', '=', 'tc.parent_message_id')
             .orderBy('created_at'),

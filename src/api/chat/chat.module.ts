@@ -12,6 +12,7 @@ import { ConversationService } from './conversations/conversation.service';
 import { BranchContextController } from './branch-contexts/branch-context.controller';
 import { BranchContextService } from './branch-contexts/branch-context.service';
 import { ConversationRepository } from './conversations/conversation.repository';
+import { MessageReplyRepository } from './messages/message-reply.repository';
 
 @Module({
   imports: [LLMModule],
@@ -19,10 +20,14 @@ import { ConversationRepository } from './conversations/conversation.repository'
   providers: [
     ConversationService,
     ConversationRepository,
+
     ChatRepository,
     ChatService,
+
     MessageRepository,
+    MessageReplyRepository,
     MessageService,
+
     BranchContextRepository,
     BranchContextService,
   ],
