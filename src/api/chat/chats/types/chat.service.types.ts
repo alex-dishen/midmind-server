@@ -7,8 +7,8 @@ export type GetUserNonArchivedChatsOutput = {
 
 export type GetChatByIdOutput = {
   id: string;
-  path: string[];
-  name: string | null;
+  name: string;
   depth: number;
+  path: string[];
   root_chat_id: string | null;
 };

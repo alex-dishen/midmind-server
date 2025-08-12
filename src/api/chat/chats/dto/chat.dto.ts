@@ -10,6 +10,12 @@ export class GetChatQueryDto {
   parent_chat_id?: string;
 }
 
+export class GetChatDetailsDto {
+  @IsUUID()
+  id: string;
+  name: string;
+}
+
 export class ChatDto {
   @IsUUID()
   id: string;

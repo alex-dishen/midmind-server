@@ -1,11 +1,11 @@
 import { ChatService } from './chat.service';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { MessageDto } from 'src/shared/dtos/message.dto';
-import { ChatDto, GetChatQueryDto } from 'src/api/chat/chats/dto/chat.dto';
+import { ChatDto, GetChatDetailsDto, GetChatQueryDto } from 'src/api/chat/chats/dto/chat.dto';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
 import { GetUser } from 'src/shared/decorators/get-user.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Put, Query, UseGuards } from '@nestjs/common';
 import { ChatDtoMapper } from './mappers/chat.dto.mapper';
 
 @ApiTags('Chats')
@@ -15,6 +15,14 @@ import { ChatDtoMapper } from './mappers/chat.dto.mapper';
 export class ChatController {
   constructor(private chatService: ChatService) {}
 
+  @ApiOperation({ summary: 'Update a chat data' })
+  @Put('/:id')
+  async updateChat(@Param('id') chatId: string, @Body() data: UpdateChatDto): Promise<MessageDto> {
+    await this.chatService.updateChat(chatId, data);
+
+    return { message: 'Successfully updated the chat' };
+  }
+
   @ApiOperation({ summary: 'Get all user not deleted chats' })
   @Get()
   async getUserChats(@Query() queryParams: GetChatQueryDto, @GetUser('sub') userId: string): Promise<ChatDto[]> {
@@ -23,12 +31,14 @@ export class ChatController {
     return ChatDtoMapper.toUserChatsDto(userChats);
   }
 
-  @ApiOperation({ summary: 'Update a chat data' })
-  @Put('/:id')
-  async updateChat(@Param('id') chatId: string, @Body() data: UpdateChatDto): Promise<MessageDto> {
-    await this.chatService.updateChat(chatId, data);
+  @ApiOperation({ summary: 'Get chat details' })
+  @Get('/:id')
+  async getChatDetails(@Param('id') chatId: string): Promise<GetChatDetailsDto> {
+    const chatDetails = await this.chatService.getChatById(chatId);
 
-    return { message: 'Successfully updated the chat' };
+    if (!chatDetails) throw new NotFoundException();
+
+    return ChatDtoMapper.toChatDetailsDto(chatDetails);
   }
 
   @ApiOperation({ summary: 'Delete the chat' })
