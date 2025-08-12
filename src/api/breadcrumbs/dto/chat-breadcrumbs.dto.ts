@@ -3,7 +3,7 @@ import { IsUUID } from 'class-validator';
 export enum BreadcrumbType {
   FOLDER = 'folder',
   MINDLET = 'mindlet',
-  ROOT_CHAT = 'root_chat',
+  CHAT = 'chat',
   BRANCH = 'branch',
 }
 
