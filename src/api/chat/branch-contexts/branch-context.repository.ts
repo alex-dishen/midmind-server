@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/db/db.service';
 import { GetBranchContextByOutput } from './types/branch-context.repository.types';
-import { BranchContextCreateInput, BranchContextGetOutput } from 'src/db/types/db.types';
+import { BranchContextCreateInput, BranchContextGetOutput, BranchContextUpdateInput } from 'src/db/types/db.types';
 
 @Injectable()
 export class BranchContextRepository {
@@ -9,6 +9,10 @@ export class BranchContextRepository {
 
   async createBranchContext(data: BranchContextCreateInput): Promise<void> {
     await this.kysely.db.insertInto('branch_contexts').values(data).executeTakeFirstOrThrow();
+  }
+
+  async updateBranchContextByChildChatId(childChatId: string, data: BranchContextUpdateInput): Promise<void> {
+    await this.kysely.db.updateTable('branch_contexts').set(data).where('child_chat_id', '=', childChatId).execute();
   }
 
   getBranchContextBy(where: Partial<BranchContextGetOutput>): Promise<GetBranchContextByOutput[]> {

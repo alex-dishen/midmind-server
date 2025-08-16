@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/db/db.service';
-import { GetChatsByOutput, GetChatByIdOutput } from './types/chat.repository.types';
+import { GetChatsByOutput, GetChatByIdOutput, GetChatWithBranchContextOutput } from './types/chat.repository.types';
 import { ChatCreateInput, ChatGetOutput, ChatUpdateInput } from 'src/db/types/db.types';
 import { sql } from 'kysely';
 
@@ -56,6 +56,15 @@ export class ChatRepository {
       .where('id', '=', chatId)
       .select(['id', 'name', 'depth', 'root_chat_id', 'path'])
       .executeTakeFirst();
+  }
+
+  getChatWithBranchContext(chatId: string): Promise<GetChatWithBranchContextOutput | undefined> {
+    return this.kysely.db
+      .selectFrom('chats as c')
+      .leftJoin('branch_contexts as bc', 'c.id', 'bc.child_chat_id')
+      .select(['c.id', 'c.name', 'bc.parent_chat_id', 'bc.parent_message_id'])
+      .where('c.id', '=', chatId)
+      .executeTakeFirstOrThrow();
   }
 
   async deleteChat(chatId: string): Promise<void> {

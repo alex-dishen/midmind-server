@@ -12,9 +12,17 @@ export class ChatDtoMapper {
   }
 
   static toChatDetailsDto(data: GetChatByIdOutput): GetChatDetailsDto {
+    const { id, name, parent_chat_id, parent_message_id } = data;
+    let metadata = null;
+
+    if (parent_chat_id && parent_message_id) {
+      metadata = { parent_chat_id, parent_message_id };
+    }
+
     return {
-      id: data.id,
-      name: data.name,
+      id: id,
+      name: name,
+      metadata: metadata,
     };
   }
 }

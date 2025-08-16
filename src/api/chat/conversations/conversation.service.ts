@@ -13,7 +13,6 @@ import {
   SaveConversationDataInput,
   StreamLLMResponseInput,
 } from './types/conversation.service.types';
-import { generateRandomPastelHexColor } from 'src/shared/utils/generate-random-hex';
 import { ChatRepository } from '../chats/chat.repository';
 import { Transaction } from 'src/db/transactions/transaction.decorator';
 import { ConversationRepository } from './conversation.repository';
@@ -95,38 +94,7 @@ export class ConversationService {
 
   @Transaction()
   private async saveConversationData({ data, fullLlmResponse, llmMessageId, userId, chatTitle }: SaveConversationDataInput) {
-    const chat = await this.chatRepository.getChatById(data.chat_id);
-
-    // A conversation was initialized to a non existing chat/branch
-    if (!chat) {
-      let depth = 0;
-      let rootChatId: string | undefined;
-      let contextPath: string[] = [data.chat_id];
-
-      // A conversation was initialized in a branch
-      if (data.branch_context) {
-        const parentChat = await this.chatRepository.getChatById(data.branch_context.parent_chat_id);
-
-        if (parentChat) {
-          depth = parentChat.depth + 1;
-          // parentChat may not have root_chat_id as parent might be the root itself
-          rootChatId = parentChat.root_chat_id || data.branch_context.parent_chat_id;
-          // parentChat.path = ['root_id', 'parent_chat_id']
-          contextPath = [...parentChat.path, data.chat_id];
-        }
-      }
-
-      await this.chatRepository.createChat({
-        depth,
-        user_id: userId,
-        name: chatTitle,
-        id: data.chat_id,
-        path: contextPath,
-        root_chat_id: rootChatId,
-        directory_id: data.directory_id,
-        parent_chat_id: data.branch_context?.parent_chat_id,
-      });
-    }
+    await this.chatRepository.updateChat(data.chat_id, { name: chatTitle });
 
     await this.messageRepository.createMessage({
       chat_id: data.chat_id,
@@ -158,18 +126,7 @@ export class ConversationService {
     }
 
     if (data.branch_context) {
-      await this.branchContextRepository.createBranchContext({
-        child_chat_id: data.chat_id,
-        child_message_id: data.message_id,
-        context_type: data.branch_context?.context_type,
-        end_position: data.branch_context?.end_position,
-        connection_color: generateRandomPastelHexColor(),
-        selected_text: data.branch_context?.selected_text,
-        parent_chat_id: data.branch_context?.parent_chat_id,
-        start_position: data.branch_context?.start_position,
-        connection_type: data.branch_context?.connection_type,
-        parent_message_id: data.branch_context?.parent_message_id,
-      });
+      await this.branchContextRepository.updateBranchContextByChildChatId(data.chat_id, { child_message_id: data.message_id });
     }
   }
 
@@ -179,8 +136,7 @@ export class ConversationService {
     let chatTitle = 'New conversation';
 
     try {
-      // If user creates a branch we need to get parent context as child chat doesn't exist yet
-      const chatInfo = await this.chatRepository.getChatById(data.branch_context?.parent_chat_id || data.chat_id);
+      const chatInfo = await this.chatRepository.getChatById(data.chat_id);
 
       const promptToAI = await this.generateAIPrompt({
         userInput: data.content,

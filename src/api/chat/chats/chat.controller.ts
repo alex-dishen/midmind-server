@@ -5,8 +5,9 @@ import { ChatDto, GetChatDetailsDto, GetChatQueryDto } from 'src/api/chat/chats/
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
 import { GetUser } from 'src/shared/decorators/get-user.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, NotFoundException, Param, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ChatDtoMapper } from './mappers/chat.dto.mapper';
+import { CreateChatDto } from './dto/create-chat.dto';
 
 @ApiTags('Chats')
 @ApiBearerAuth()
@@ -14,6 +15,14 @@ import { ChatDtoMapper } from './mappers/chat.dto.mapper';
 @Controller('chats')
 export class ChatController {
   constructor(private chatService: ChatService) {}
+
+  @ApiOperation({ summary: 'Create a chat' })
+  @Post()
+  async createChat(@GetUser('sub') userId: string, @Body() data: CreateChatDto): Promise<MessageDto> {
+    await this.chatService.createChat(userId, data);
+
+    return { message: 'Chat was created' };
+  }
 
   @ApiOperation({ summary: 'Update a chat data' })
   @Put('/:id')

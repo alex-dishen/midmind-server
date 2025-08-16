@@ -153,11 +153,11 @@ model MessageReply {
 }
 
 model BranchContext {
-  id                String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  child_chat_id     String @unique @db.Uuid
-  parent_chat_id    String @db.Uuid
-  parent_message_id String @db.Uuid
-  child_message_id  String @unique @db.Uuid
+  id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  child_chat_id     String  @unique @db.Uuid
+  parent_chat_id    String  @db.Uuid
+  parent_message_id String  @db.Uuid
+  child_message_id  String? @unique @db.Uuid // Can be null when a chat created but the first message wasn't sent yet
 
   selected_text    String? // Can be null when full message was used to create a branch
   start_position   Int? // Can be null when full message was used to create a branch
@@ -168,10 +168,10 @@ model BranchContext {
   connection_color String
 
   // Relations & Prisma related
-  childChat     Chat    @relation("ChildBranchContext", fields: [child_chat_id], references: [id])
-  parentChat    Chat    @relation("ParentBranchContext", fields: [parent_chat_id], references: [id])
-  childMessage  Message @relation("ChildMessageContext", fields: [child_message_id], references: [id])
-  parentMessage Message @relation("ParentMessageContext", fields: [parent_message_id], references: [id])
+  childChat     Chat     @relation("ChildBranchContext", fields: [child_chat_id], references: [id])
+  parentChat    Chat     @relation("ParentBranchContext", fields: [parent_chat_id], references: [id])
+  childMessage  Message? @relation("ChildMessageContext", fields: [child_message_id], references: [id])
+  parentMessage Message  @relation("ParentMessageContext", fields: [parent_message_id], references: [id])
 
   @@map("branch_contexts")
 }

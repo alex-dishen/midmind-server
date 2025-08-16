@@ -1,5 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
-import { ConnectionType, ContextType } from 'src/db/types/db.types';
+import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 import { GeminiModels } from 'src/llm/gemini/type/gemini-models';
 
 export enum ConversationResponseType {
@@ -11,28 +10,7 @@ export enum ConversationResponseType {
 
 class ConversationBranchContextDto {
   @IsUUID()
-  parent_chat_id: string;
-
-  @IsUUID()
   parent_message_id: string;
-
-  @IsString()
-  @IsOptional()
-  selected_text?: string;
-
-  @IsNumber()
-  @IsOptional()
-  start_position?: number;
-
-  @IsNumber()
-  @IsOptional()
-  end_position?: number;
-
-  @IsEnum(ConnectionType)
-  connection_type: ConnectionType;
-
-  @IsEnum(ContextType)
-  context_type: ContextType;
 }
 
 export class ReplyToDto {
@@ -49,10 +27,6 @@ export class CreateConversationDto {
 
   @IsUUID()
   message_id: string;
-
-  @IsUUID()
-  @IsOptional()
-  directory_id?: string;
 
   @IsEnum(GeminiModels)
   model: GeminiModels;

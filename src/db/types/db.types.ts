@@ -1,5 +1,5 @@
 // Auto-generated CRUD types for Kysely
-// Generated at 2025-08-12T07:06:33.575Z
+// Generated at 2025-08-13T17:14:24.952Z
 
 import type { ColumnType, Generated, Selectable, Insertable, Updateable } from 'kysely';
 
@@ -111,7 +111,7 @@ type BranchContextTable = {
   child_chat_id: string;
   parent_chat_id: string;
   parent_message_id: string;
-  child_message_id: string;
+  child_message_id: string | null;
   selected_text: string | null;
   start_position: number | null;
   end_position: number | null;
