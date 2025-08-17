@@ -94,7 +94,10 @@ export class ConversationService {
 
   @Transaction()
   private async saveConversationData({ data, fullLlmResponse, llmMessageId, userId, chatTitle }: SaveConversationDataInput) {
-    await this.chatRepository.updateChat(data.chat_id, { name: chatTitle });
+    // If there is chatTitle that means the first message in the chat was sent
+    if (chatTitle) {
+      await this.chatRepository.updateChat(data.chat_id, { name: chatTitle });
+    }
 
     await this.messageRepository.createMessage({
       chat_id: data.chat_id,
@@ -130,17 +133,16 @@ export class ConversationService {
     }
   }
 
-  // The function handles messages in main chats and branchs
   async askAi({ data, userId, onChunk }: AskAiInput): Promise<void> {
     const llmMessageId = randomUUID();
-    let chatTitle = 'New conversation';
+    let chatTitle: string | undefined;
 
     try {
-      const chatInfo = await this.chatRepository.getChatById(data.chat_id);
+      const chatHasMessages = await this.messageRepository.checkIfChatHasMessages(data.chat_id);
 
       const promptToAI = await this.generateAIPrompt({
+        chatId: data.chat_id,
         userInput: data.content,
-        chatId: chatInfo?.id,
         replyTo: data.reply_to?.content,
       });
 
@@ -151,8 +153,7 @@ export class ConversationService {
         contents: promptToAI,
       });
 
-      // if branch or root chat is created
-      if (data.branch_context || !chatInfo) {
+      if (!chatHasMessages) {
         chatTitle = await this.generateChatTitle({
           model: data.model,
           userInput: data.content,

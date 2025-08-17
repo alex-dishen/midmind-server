@@ -8,6 +8,6 @@ export class MessageService {
   constructor(private messageRepository: MessageRepository) {}
 
   getChatMessages(chatId: string, pagination: PaginateOptions): Promise<PaginatedResult<GetChatMessagesOutput>> {
-    return this.messageRepository.getChatMessages(chatId, pagination);
+    return this.messageRepository.getChatMessagesPaginated(chatId, pagination);
   }
 }

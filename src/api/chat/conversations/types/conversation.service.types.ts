@@ -35,7 +35,7 @@ export type GetAIContextOutput = {
 
 export type SaveConversationDataInput = {
   userId: string;
-  chatTitle: string;
+  chatTitle?: string;
   llmMessageId: string;
   fullLlmResponse: string;
   data: CreateConversationDto;

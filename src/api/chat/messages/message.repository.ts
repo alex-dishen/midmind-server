@@ -13,7 +13,18 @@ export class MessageRepository {
     await this.kysely.db.insertInto('messages').values(data).execute();
   }
 
-  getChatMessages(chatId: string, pagination: PaginateOptions): Promise<PaginatedResult<MessageData>> {
+  async checkIfChatHasMessages(chatId: string): Promise<boolean> {
+    const row = await this.kysely.db
+      .selectFrom('messages')
+      .select('id')
+      .where('chat_id', '=', chatId)
+      .limit(1)
+      .executeTakeFirst();
+
+    return !!row;
+  }
+
+  getChatMessagesPaginated(chatId: string, pagination: PaginateOptions): Promise<PaginatedResult<MessageData>> {
     const qb = this.kysely.db
       .selectFrom('messages as m')
       .leftJoin('message_replies as mr', 'mr.message_id', 'm.id')
