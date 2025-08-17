@@ -48,12 +48,12 @@ export class DirectoryService {
 
     if (!directoryToMove) throw new Error('Directory not found');
 
-    if (directoryToMove.parent_directory_id === data.target_parent_id || null) {
+    if (directoryToMove.parent_directory_id === data.target_parent_id || directoryToMove.id === data.target_parent_id) {
       throw new Error('You want to move directory to itself');
     }
 
-    if (data.target_parent_id) {
-      const parentDirectory = await this.directoryRepository.getDirectoryById(directoryId);
+    if (data.target_parent_id !== null) {
+      const parentDirectory = await this.directoryRepository.getDirectoryById(data.target_parent_id);
 
       if (!parentDirectory) {
         throw new Error('Target parent not found');
@@ -74,7 +74,11 @@ export class DirectoryService {
       const currentPath = affectedDirectory.path;
       const index = currentPath.indexOf(directoryId);
 
-      const newPath = [...newPrefix, ...currentPath.slice(index + 1)];
+      let newPath = newPrefix;
+
+      if (data.target_parent_id !== null) {
+        newPath = [...newPrefix, ...currentPath.slice(index + 1)];
+      }
 
       const dataForUpdate: DirectoryUpdateInput = {
         path: newPath,
