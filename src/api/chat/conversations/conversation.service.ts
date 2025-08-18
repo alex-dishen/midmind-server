@@ -31,14 +31,9 @@ export class ConversationService {
   ) {}
 
   private async generateAIPrompt({ userInput, chatId, replyTo }: GenerateAIPromptInput): Promise<GetAIContextOutput[] | string> {
-    // If there is no chatId it means the root chat was created
-    if (!chatId) {
-      return userInput;
-    }
+    const fullContext = await this.conversationRepository.getFullContextForCurrentConversation(chatId);
 
-    const contextMessages = await this.conversationRepository.getMessagesForAiContext(chatId);
-
-    const result = contextMessages.map(message => ({
+    const result = fullContext.map(message => ({
       role: message.role,
       parts: [{ text: message.content }],
     }));

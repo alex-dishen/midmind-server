@@ -18,9 +18,9 @@ type OnChunkT = (
 ) => void;
 
 export type GenerateAIPromptInput = {
-  userInput: string;
+  chatId: string;
   replyTo?: string;
-  chatId?: string;
+  userInput: string;
 };
 
 export type GenerateChatTitleOutput = {
