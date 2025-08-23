@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { GeminiService } from 'src/llm/gemini/gemini.service';
 import { MessageRepository } from '../messages/message.repository';
 import { BranchContextRepository } from '../branch-contexts/branch-context.repository';
@@ -129,7 +128,6 @@ export class ConversationService {
   }
 
   async askAi({ data, userId, onChunk }: AskAiInput): Promise<void> {
-    const llmMessageId = randomUUID();
     let chatTitle: string | undefined;
 
     try {
@@ -143,9 +141,9 @@ export class ConversationService {
 
       const fullLlmResponse = await this.streamLLMResponse({
         onChunk,
-        llmMessageId,
         model: data.model,
         contents: promptToAI,
+        llmMessageId: data.future_llm_message_id,
       });
 
       if (!chatHasMessages) {
@@ -157,13 +155,13 @@ export class ConversationService {
         onChunk({ type: ConversationResponseType.TITLE, chat_id: data.chat_id, title: chatTitle });
       }
 
-      await this.saveConversationData({ data, fullLlmResponse, llmMessageId, userId, chatTitle });
+      await this.saveConversationData({ data, fullLlmResponse, llmMessageId: data.future_llm_message_id, userId, chatTitle });
 
-      onChunk({ type: ConversationResponseType.COMPLETE, id: llmMessageId });
+      onChunk({ type: ConversationResponseType.COMPLETE, id: data.future_llm_message_id });
     } catch (error) {
       console.error('Error in streaming:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      onChunk({ type: ConversationResponseType.ERROR, id: llmMessageId, error: errorMessage });
+      onChunk({ type: ConversationResponseType.ERROR, id: data.future_llm_message_id, error: errorMessage });
       throw new Error(errorMessage);
     }
   }

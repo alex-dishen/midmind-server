@@ -28,6 +28,9 @@ export class CreateConversationDto {
   @IsUUID()
   message_id: string;
 
+  @IsUUID()
+  future_llm_message_id: string;
+
   @IsEnum(GeminiModels)
   model: GeminiModels;
 
