@@ -44,6 +44,7 @@ export class ChatRepository {
         'id',
         'name',
         'directory_id',
+        'parent_chat_id',
         sql<boolean>`EXISTS (SELECT 1 FROM chats c2 WHERE c2.parent_chat_id = chats.id)`.as('has_children'),
       ])
       .orderBy('created_at', 'desc')

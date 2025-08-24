@@ -29,6 +29,7 @@ export class ChatDto {
   id: string;
 
   name: string;
-  parent_directory_id: string | null;
   has_children: boolean;
+  parent_chat_id: string | null;
+  parent_directory_id: string | null;
 }

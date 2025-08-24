@@ -1,6 +1,6 @@
 import { ChatGetOutput } from 'src/db/types/db.types';
 
-export type GetChatsByOutput = Pick<ChatGetOutput, 'id' | 'name' | 'directory_id'> & { has_children: boolean };
+export type GetChatsByOutput = Pick<ChatGetOutput, 'id' | 'name' | 'directory_id' | 'parent_chat_id'> & { has_children: boolean };
 
 export type GetChatByIdOutput = Pick<ChatGetOutput, 'id' | 'name' | 'depth' | 'root_chat_id' | 'path'>;
 

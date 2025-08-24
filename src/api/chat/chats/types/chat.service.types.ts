@@ -3,6 +3,7 @@ export type GetUserNonArchivedChatsOutput = {
   name: string;
   directory_id: string | null;
   has_children: boolean;
+  parent_chat_id: string | null;
 };
 
 export type GetChatByIdOutput = {
