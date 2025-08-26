@@ -1,0 +1,30 @@
+enum DirectoryType {
+    FOLDER  @map("folder")
+    MINDLET @map("mindlet")
+}
+
+model Directory {
+    id                  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    root_directory_id   String? @db.Uuid
+    parent_directory_id String? @db.Uuid
+    user_id             String  @db.Uuid
+
+    name       String
+    depth      Int           @default(0)
+    created_at DateTime      @default(now())
+    updated_at DateTime?
+    is_deleted Boolean       @default(false)
+    deleted_at DateTime?
+    type       DirectoryType
+    path       String[] //  JSON array of directory IDs from root to current directory: ["root_id", "child1_id", "current_id"]
+
+    chats                 Chat[]
+    user                  User        @relation(fields: [user_id], references: [id])
+    rootDirectory         Directory?  @relation("RootDirectoryRelation", fields: [root_directory_id], references: [id])
+    descendantDirectories Directory[] @relation("RootDirectoryRelation")
+    parentDirectory       Directory?  @relation("DirectoryHierarchy", fields: [parent_directory_id], references: [id])
+    childDirectories      Directory[] @relation("DirectoryHierarchy")
+
+    @@index([user_id], map: "directory_user_id_idx")
+    @@map("directories")
+}

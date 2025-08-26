@@ -1,0 +1,108 @@
+enum MessageSenderRole {
+    MODEL @map("model")
+    USER  @map("user")
+}
+
+enum ConnectionType {
+    ATTACHED  @map("attached")
+    DETACHED  @map("detached")
+    TEMPORARY @map("temporary")
+}
+
+enum ContextType {
+    FULL_MESSAGE   @map("full_message")
+    TEXT_SELECTION @map("text_selection")
+}
+
+model Chat {
+    id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    parent_chat_id String? @db.Uuid
+    user_id        String  @db.Uuid
+    root_chat_id   String? @db.Uuid
+    directory_id   String? @db.Uuid
+
+    name       String
+    depth      Int       @default(0)
+    created_at DateTime  @default(now())
+    updated_at DateTime? @updatedAt
+    is_deleted Boolean   @default(false)
+    deleted_at DateTime?
+    position_y Float     @default(0)
+    position_x Float     @default(0)
+    path       String[] //  JSON array of chat IDs from root to current chat: ["root_id", "child1_id", "current_id"]
+
+    user                User            @relation(fields: [user_id], references: [id])
+    directory           Directory?      @relation(fields: [directory_id], references: [id])
+    rootChat            Chat?           @relation("RootChatRelation", fields: [root_chat_id], references: [id])
+    descendantChats     Chat[]          @relation("RootChatRelation")
+    parentChat          Chat?           @relation("ChatHierarchy", fields: [parent_chat_id], references: [id])
+    childrenChats       Chat[]          @relation("ChatHierarchy")
+    messages            Message[]
+    childBranchContext  BranchContext?  @relation("ChildBranchContext")
+    parentBranchContext BranchContext[] @relation("ParentBranchContext")
+
+    @@index([user_id], map: "chat_user_id_idx")
+    @@index([directory_id], map: "chat_directory_id_idx")
+    @@map("chats")
+}
+
+model Message {
+    id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    parent_message_id String? @db.Uuid // Message that was sent before the current message
+    chat_id           String  @db.Uuid
+    user_id           String? @db.Uuid
+
+    content    String
+    llm_model  String? // Null when a user sends a message
+    role       MessageSenderRole
+    created_at DateTime          @default(now())
+
+    user                User?           @relation(fields: [user_id], references: [id])
+    chat                Chat            @relation(fields: [chat_id], references: [id])
+    parentMessage       Message?        @relation("MessageHierarchy", fields: [parent_message_id], references: [id])
+    childMessages       Message[]       @relation("MessageHierarchy")
+    childBranchContext  BranchContext?  @relation("ChildMessageContext")
+    parentBranchContext BranchContext[] @relation("ParentMessageContext")
+    messagesWithReply   MessageReply[]  @relation("MessageWithReply")
+    messagesRepliedTo   MessageReply[]  @relation("MessageRepliedTo")
+
+    @@index([chat_id], map: "message_chat_id_idx")
+    @@map("messages")
+}
+
+model MessageReply {
+    id                    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    message_id            String @db.Uuid
+    message_id_replied_to String @db.Uuid
+
+    reply_content String
+
+    messageWithReply Message @relation("MessageWithReply", fields: [message_id], references: [id])
+    messageRepliedTo Message @relation("MessageRepliedTo", fields: [message_id_replied_to], references: [id])
+
+    @@unique([message_id, message_id_replied_to])
+    @@map("message_replies")
+}
+
+model BranchContext {
+    id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    child_chat_id     String  @unique @db.Uuid
+    parent_chat_id    String  @db.Uuid
+    parent_message_id String  @db.Uuid
+    child_message_id  String? @unique @db.Uuid // Can be null when a chat created but the first message wasn't sent yet
+
+    selected_text    String? // Can be null when full message was used to create a branch
+    start_position   Int? // Can be null when full message was used to create a branch
+    end_position     Int? // Can be null when full message was used to create a branch
+    created_at       DateTime       @default(now())
+    context_type     ContextType
+    connection_type  ConnectionType
+    connection_color String
+
+    childChat     Chat     @relation("ChildBranchContext", fields: [child_chat_id], references: [id])
+    parentChat    Chat     @relation("ParentBranchContext", fields: [parent_chat_id], references: [id])
+    childMessage  Message? @relation("ChildMessageContext", fields: [child_message_id], references: [id])
+    parentMessage Message  @relation("ParentMessageContext", fields: [parent_message_id], references: [id])
+
+    @@map("branch_contexts")
+}
