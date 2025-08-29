@@ -3,10 +3,10 @@ import { FileRepository } from './file.repository';
 import { FileCreateDto } from './dto/create-file.dto';
 import { FileUpdateDto } from './dto/update-file.dto';
 import { FileStatus } from 'src/db/types/db.types';
-import { S3Service } from '../../shared/services/aws/s3/s3.service';
-import { CreateFileRecordOutput } from './types/file.service.types';
+import { CreateFileRecordOutput, GetFileOutput } from './types/file.service.types';
 import { FileProcessingService } from './services/file-processing.service';
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { S3Service } from 'src/shared/services/aws/s3/s3.service';
 
 @Injectable()
 export class FileService {
@@ -79,5 +79,21 @@ export class FileService {
       status: data.status,
       size_bytes: objectInfo.size ? BigInt(objectInfo.size) : file.size_bytes,
     });
+  }
+
+  async getFileById(fileId: string): Promise<GetFileOutput> {
+    const file = await this.fileRepository.getFileById(fileId);
+
+    if (!file) {
+      throw new NotFoundException('File is not found');
+    }
+
+    const downloadUrl = await this.s3Service.generateDownloadUrl({
+      bucket: file.bucket,
+      key: file.object_key,
+      expiresIn: 3600, // 60 minutes
+    });
+
+    return { id: file.id, download_url: downloadUrl, file_name: file.original_filename };
   }
 }

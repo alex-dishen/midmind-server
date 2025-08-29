@@ -8,12 +8,12 @@ import { RedisModule } from 'src/redis/redis.module';
 import { AuthModule } from 'src/api/auth/auth.module';
 import { UserModule } from 'src/api/user/user.module';
 import { ChatModule } from 'src/api/chat/chat.module';
-import { FileModule } from 'src/api/files/file.module';
 import { DirectoryModule } from './api/directory/directory.module';
 import { BreadcrumbsModule } from './api/breadcrumbs/breadcrumbs.module';
 import { AppConfigModule } from 'src/shared/services/config-service/config.module';
 import { validateEnv } from 'src/shared/services/config-service/env-variables/validate-env';
 import { AwsModule } from './shared/services/aws/aws.module';
+import { FileModule } from './api/file/file.module';
 
 @Module({
   imports: [

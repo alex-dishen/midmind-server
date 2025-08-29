@@ -1,10 +1,10 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { FileRepository } from '../file.repository';
-import { S3Service } from '../../../shared/services/aws/s3/s3.service';
 import { FileStatus } from 'src/db/types/db.types';
 import { FileUploadJob, QueueList } from 'src/shared/enums/bull-queues';
 import { CleanupAbandonedUploadJobArgs, FileUploadProcessJobs } from '../types/file-upload.processor.types';
+import { S3Service } from 'src/shared/services/aws/s3/s3.service';
 
 @Processor(QueueList.FILE_UPLOAD)
 export class FileUploadProcessor extends WorkerHost {

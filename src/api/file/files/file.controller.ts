@@ -1,11 +1,12 @@
-import { Controller, Post, Param, Body, UseGuards, Put } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileService } from './file.service';
+import { GetFileDto } from './dto/get-file.dto';
+import { FileUpdateDto } from './dto/update-file.dto';
+import { MessageDto } from 'src/shared/dtos/message.dto';
 import { JwtAuthGuard } from 'src/shared/guards/jwt.guard';
 import { GetUser } from 'src/shared/decorators/get-user.decorator';
-import { MessageDto } from 'src/shared/dtos/message.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileCreateDto, FileCreateResponseDto } from './dto/create-file.dto';
-import { FileUpdateDto } from './dto/update-file.dto';
+import { Controller, Post, Param, Body, UseGuards, Put, Get } from '@nestjs/common';
 
 @ApiTags('Files')
 @ApiBearerAuth()
@@ -28,5 +29,11 @@ export class FileController {
     await this.fileService.updateFile(fileId, data);
 
     return { message: 'File updated successfully' };
+  }
+
+  @ApiOperation({ summary: 'Get file to display' })
+  @Get('/:id')
+  async getFile(@Param('id') fileId: string): Promise<GetFileDto> {
+    return this.fileService.getFileById(fileId);
   }
 }

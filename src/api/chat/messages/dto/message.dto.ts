@@ -15,6 +15,12 @@ class AppMessageBranchDto {
   start_position: number | null;
 }
 
+class AppMessageAttachmentDto {
+  id: string;
+  mime_type: string;
+  original_filename: string;
+}
+
 // The name is not MessageDto as there is already general MessageDto class
 export class AppMessageDto {
   @IsUUID()
@@ -26,4 +32,5 @@ export class AppMessageDto {
   llm_model: string | null;
   reply_content: string | null;
   branches: AppMessageBranchDto[];
+  attachments: AppMessageAttachmentDto[];
 }

@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsInt, IsPositive, Max } from 'class-validator';
 
 enum AllowedMemeType {
@@ -16,7 +16,7 @@ export class FileCreateDto {
   @Max(10 * 1024 * 1024) // 10MB max
   size_bytes: number;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: 'MIME type of the file',
     example: 'image/jpeg',
   })
