@@ -318,7 +318,7 @@ export class FileProcessingService {
   validateFileSize(sizeBytes: number, category: FileCategory): boolean {
     const limits = {
       [FileCategory.IMAGE]: 50 * 1024 * 1024, // 50MB
-      [FileCategory.DOCUMENT]: 100 * 1024 * 1024, // 100MB
+      [FileCategory.DOCUMENT]: 50 * 1024 * 1024, // 50MB
       // [FileCategory.AUDIO]: 200 * 1024 * 1024, // 200MB
       // [FileCategory.VIDEO]: 500 * 1024 * 1024, // 500MB
       // [FileCategory.ARCHIVE]: 100 * 1024 * 1024, // 100MB

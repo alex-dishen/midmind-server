@@ -13,7 +13,7 @@ export class FileCreateDto {
 
   @IsInt()
   @IsPositive()
-  @Max(10 * 1024 * 1024) // 10MB max
+  @Max(50 * 1024 * 1024) // 50MB max
   size_bytes: number;
 
   @ApiProperty({
