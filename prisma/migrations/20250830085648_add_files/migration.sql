@@ -36,7 +36,13 @@ CREATE TABLE "file_bindings" (
 );
 
 -- CreateIndex
+CREATE INDEX "file_uploader_id_idx" ON "files"("uploader_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "files_bucket_object_key_key" ON "files"("bucket", "object_key");
+
+-- CreateIndex
+CREATE INDEX "file_binding_target_id_idx" ON "file_bindings"("target_id");
 
 -- AddForeignKey
 ALTER TABLE "files" ADD CONSTRAINT "files_uploader_id_fkey" FOREIGN KEY ("uploader_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
