@@ -38,7 +38,7 @@ export class CreateConversationDto {
   @IsString()
   content: string;
 
-  @ApiProperty({ description: 'Attachment ids' })
+  @ApiProperty({ description: 'File ids' })
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
   @IsOptional()

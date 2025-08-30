@@ -29,6 +29,7 @@ model File {
     file_bindings FileBinding[]
 
     @@unique([bucket, object_key])
+    @@index([uploader_id], map: "file_uploader_id_idx")
     @@map("files")
 }
 
@@ -41,5 +42,6 @@ model FileBinding {
 
     file File @relation(fields: [file_id], references: [id], onDelete: Cascade)
 
+    @@index([target_id], map: "file_binding_target_id_idx")
     @@map("file_bindings")
 }
