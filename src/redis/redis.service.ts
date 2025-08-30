@@ -11,7 +11,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   onModuleInit() {
     // ! family=0 is needed for railway hosting provider to use both IPv4 and IPv6 addresses
     // https://docs.railway.com/reference/errors/enotfound-redis-railway-internal
-    this.client = new Redis({ family: 0, host: this.config.get('REDIS_HOST'), port: this.config.get('REDIS_PORT') });
+    this.client = new Redis({ family: 0, host: this.config.get('REDISHOST'), port: this.config.get('REDISPORT') });
   }
 
   async onModuleDestroy() {

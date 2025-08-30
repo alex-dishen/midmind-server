@@ -21,8 +21,8 @@ import { FileModule } from './api/file/file.module';
     ScheduleModule.forRoot(),
     BullModule.forRoot({
       connection: {
-        host: process.env.REDIS_HOST,
-        port: Number(process.env.REDIS_PORT),
+        host: process.env.REDISHOST,
+        port: Number(process.env.REDISPORT),
       },
     }),
     AwsModule,

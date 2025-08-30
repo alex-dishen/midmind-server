@@ -75,12 +75,12 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  REDIS_HOST: string;
+  REDISHOST: string;
 
   @IsNumber()
   @Min(0)
   @Max(65535)
-  REDIS_PORT: number;
+  REDISPORT: number;
 
   @IsString()
   @IsNotEmpty()
