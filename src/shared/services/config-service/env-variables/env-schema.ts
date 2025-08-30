@@ -84,6 +84,10 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
+  REDISPASSWORD: string;
+
+  @IsString()
+  @IsNotEmpty()
   AWS_ACCESS_KEY_ID: string;
 
   @IsString()

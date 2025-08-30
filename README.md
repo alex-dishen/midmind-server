@@ -112,5 +112,3 @@ If you want to first generate the file and take a look at what will be applied d
 > 💡 API documentation is not available in production
 
 Swagger/OpenAPI documentation can be accessed at `http://localhost:3001/api`
-
-Trigger CI/CD
