@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsInt, IsPositive, Max } from 'class-validator';
 
-enum AllowedMemeType {
+enum AllowedMimeType {
   IMAGE_PNG = 'image/png',
   IMAGE_JPEG = 'image/jpeg',
   IMAGE_WEBP = 'image/webp',
@@ -21,7 +21,7 @@ export class FileCreateDto {
     example: 'image/jpeg',
   })
   @IsString()
-  mime_type: AllowedMemeType;
+  mime_type: AllowedMimeType;
 
   @IsString()
   extension: string;
