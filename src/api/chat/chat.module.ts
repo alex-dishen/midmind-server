@@ -13,9 +13,10 @@ import { BranchContextController } from './branch-contexts/branch-context.contro
 import { BranchContextService } from './branch-contexts/branch-context.service';
 import { ConversationRepository } from './conversations/conversation.repository';
 import { MessageReplyRepository } from './messages/message-reply.repository';
+import { FileModule } from '../file/file.module';
 
 @Module({
-  imports: [LLMModule],
+  imports: [LLMModule, FileModule],
   controllers: [ConversationController, ChatController, MessageController, BranchContextController],
   providers: [
     ConversationService,

@@ -26,10 +26,6 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  REDIS_URL: string;
-
-  @IsString()
-  @IsNotEmpty()
   DATABASE_URL: string;
 
   @IsString()
@@ -76,4 +72,29 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   GOOGLE_CLIENT_SECRET: string;
+
+  @IsString()
+  @IsNotEmpty()
+  REDIS_HOST: string;
+
+  @IsNumber()
+  @Min(0)
+  @Max(65535)
+  REDIS_PORT: number;
+
+  @IsString()
+  @IsNotEmpty()
+  AWS_ACCESS_KEY_ID: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AWS_SECRET_ACCESS_KEY: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AWS_REGION: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AWS_S3_BUCKET: string;
 }

@@ -1,0 +1,23 @@
+enum UserProvider {
+    GOOGLE @map("google")
+}
+
+model User {
+    id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    email       String        @unique
+    first_name  String
+    last_name   String
+    avatar      String?
+    password    String? // Null when added with google or other providers
+    provider    UserProvider?
+    provider_id String?
+    created_at  DateTime      @default(now())
+    updated_at  DateTime?     @updatedAt
+
+    chats          Chat[]
+    messages       Message[]
+    directories    Directory[]
+    uploaded_files File[]
+
+    @@map("users")
+}

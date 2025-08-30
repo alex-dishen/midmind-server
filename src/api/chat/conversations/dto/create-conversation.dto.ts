@@ -1,4 +1,5 @@
-import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { GeminiModels } from 'src/llm/gemini/type/gemini-models';
 
 export enum ConversationResponseType {
@@ -36,6 +37,12 @@ export class CreateConversationDto {
 
   @IsString()
   content: string;
+
+  @ApiProperty({ description: 'File ids' })
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  @IsOptional()
+  attachments?: string[];
 
   @IsOptional()
   reply_to?: ReplyToDto;

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GeminiService } from 'src/llm/gemini/gemini.service';
 import { MessageRepository } from '../messages/message.repository';
 import { BranchContextRepository } from '../branch-contexts/branch-context.repository';
-import { MessageSenderRole } from 'src/db/types/db.types';
+import { FileBindingType, MessageSenderRole } from 'src/db/types/db.types';
 import { ConversationResponseType } from './dto/create-conversation.dto';
 import {
   AskAiInput,
@@ -17,6 +17,7 @@ import { Transaction } from 'src/db/transactions/transaction.decorator';
 import { ConversationRepository } from './conversation.repository';
 import { titlePrompt } from 'src/llm/prompts/title';
 import { MessageReplyRepository } from '../messages/message-reply.repository';
+import { FileBindingsRepository } from 'src/api/file/file-bindings/file-bindings.repository';
 
 @Injectable()
 export class ConversationService {
@@ -26,6 +27,7 @@ export class ConversationService {
     private messageRepository: MessageRepository,
     private messageReplyRepository: MessageReplyRepository,
     private conversationRepository: ConversationRepository,
+    private fileBindingsRepository: FileBindingsRepository,
     private branchContextRepository: BranchContextRepository,
   ) {}
 
@@ -120,6 +122,16 @@ export class ConversationService {
         message_id_replied_to: data.reply_to.id,
         reply_content: data.reply_to.content,
       });
+    }
+
+    if (data.attachments) {
+      const bindings = data.attachments.map(a => ({
+        file_id: a,
+        target_id: data.message_id,
+        target_type: FileBindingType.MESSAGE,
+      }));
+
+      await this.fileBindingsRepository.createBinding(bindings);
     }
 
     if (data.branch_context) {

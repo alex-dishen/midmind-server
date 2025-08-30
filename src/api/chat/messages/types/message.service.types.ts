@@ -16,4 +16,9 @@ export type GetChatMessagesOutput = {
     start_position: number | null;
     connection_type: ConnectionType;
   }[];
+  attachments: {
+    id: string;
+    mime_type: string;
+    original_filename: string;
+  }[];
 };

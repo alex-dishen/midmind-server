@@ -1,0 +1,47 @@
+enum FileStatus {
+    PENDING_UPLOAD @map("pending_upload")
+    UPLOADED       @map("uploaded")
+}
+
+enum FileCategory {
+    IMAGE    @map("image")
+    DOCUMENT @map("document")
+}
+
+enum FileBindingType {
+    MESSAGE @map("message")
+}
+
+model File {
+    id                String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    bucket            String       @db.VarChar(128)
+    object_key        String
+    original_filename String
+    extension         String       @db.VarChar(16)
+    mime_type         String       @db.VarChar(255)
+    category          FileCategory
+    size_bytes        BigInt
+    status            FileStatus   @default(PENDING_UPLOAD)
+    uploader_id       String       @db.Uuid
+    created_at        DateTime     @default(now())
+
+    uploader      User?         @relation(fields: [uploader_id], references: [id])
+    file_bindings FileBinding[]
+
+    @@unique([bucket, object_key])
+    @@index([uploader_id], map: "file_uploader_id_idx")
+    @@map("files")
+}
+
+model FileBinding {
+    id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    file_id     String          @db.Uuid
+    target_type FileBindingType
+    target_id   String          @db.Uuid
+    created_at  DateTime        @default(now())
+
+    file File @relation(fields: [file_id], references: [id], onDelete: Cascade)
+
+    @@index([target_id], map: "file_binding_target_id_idx")
+    @@map("file_bindings")
+}

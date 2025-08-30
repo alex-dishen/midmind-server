@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/db/db.service';
-import { MessageCreateInput } from 'src/db/types/db.types';
+import { FileBindingType, MessageCreateInput } from 'src/db/types/db.types';
 import { MessageData } from './types/message.repository.types';
 import { PaginatedResult, PaginateOptions } from 'src/shared/dtos/pagination.dto';
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
@@ -36,6 +36,16 @@ export class MessageRepository {
         'm.created_at',
 
         'mr.reply_content',
+
+        jsonArrayFrom(
+          eb
+            .selectFrom('file_bindings as fb')
+            .innerJoin('files as f', 'f.id', 'fb.file_id')
+            .select(['f.id', 'f.original_filename', 'f.mime_type'])
+            .whereRef('fb.target_id', '=', 'm.id')
+            .where('fb.target_type', '=', FileBindingType.MESSAGE)
+            .orderBy('fb.created_at'),
+        ).as('attachments'),
 
         jsonArrayFrom(
           eb
