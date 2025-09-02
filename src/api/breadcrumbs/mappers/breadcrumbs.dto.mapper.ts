@@ -1,4 +1,5 @@
-import { BreadcrumbType, ChatBreadcrumbsDto } from '../dto/chat-breadcrumbs.dto';
+import { EntityEnum } from 'src/shared/enums/entities';
+import { ChatBreadcrumbsDto } from '../dto/chat-breadcrumbs.dto';
 import { GetChatBreadcrumbsOutput } from '../types/breadcrumbs.service.types';
 
 export class BreadcrumbsDtoMapper {
@@ -6,13 +7,13 @@ export class BreadcrumbsDtoMapper {
     const mappedChats: ChatBreadcrumbsDto[] = chats.map(c => ({
       id: c.id,
       name: c.name,
-      type: c.parent_chat_id ? BreadcrumbType.NESTED_CHAT : BreadcrumbType.CHAT,
+      type: c.parent_chat_id ? EntityEnum.NESTED_CHAT : EntityEnum.CHAT,
     }));
 
     const mappedFolders: ChatBreadcrumbsDto[] = folders.map(d => ({
       id: d.id,
       name: d.name,
-      type: BreadcrumbType.FOLDER,
+      type: EntityEnum.FOLDER,
     }));
 
     return [...mappedFolders, ...mappedChats];

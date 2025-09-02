@@ -1,16 +1,10 @@
 import { IsUUID } from 'class-validator';
-
-export enum BreadcrumbType {
-  FOLDER = 'folder',
-  MINDLET = 'mindlet',
-  CHAT = 'chat',
-  NESTED_CHAT = 'nested_chat',
-}
+import { EntityEnum } from 'src/shared/enums/entities';
 
 export class ChatBreadcrumbsDto {
   @IsUUID()
   id: string;
 
   name: string;
-  type: BreadcrumbType;
+  type: EntityEnum;
 }
