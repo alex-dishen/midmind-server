@@ -19,7 +19,7 @@ model Chat {
     parent_chat_id String? @db.Uuid
     user_id        String  @db.Uuid
     root_chat_id   String? @db.Uuid
-    directory_id   String? @db.Uuid
+    folder_id      String? @db.Uuid
 
     name       String
     depth      Int       @default(0)
@@ -32,7 +32,7 @@ model Chat {
     path       String[] //  JSON array of chat IDs from root to current chat: ["root_id", "child1_id", "current_id"]
 
     user                User            @relation(fields: [user_id], references: [id])
-    directory           Directory?      @relation(fields: [directory_id], references: [id])
+    folder              Folder?         @relation(fields: [folder_id], references: [id])
     rootChat            Chat?           @relation("RootChatRelation", fields: [root_chat_id], references: [id])
     descendantChats     Chat[]          @relation("RootChatRelation")
     parentChat          Chat?           @relation("ChatHierarchy", fields: [parent_chat_id], references: [id])
@@ -42,7 +42,7 @@ model Chat {
     parentBranchContext BranchContext[] @relation("ParentBranchContext")
 
     @@index([user_id], map: "chat_user_id_idx")
-    @@index([directory_id], map: "chat_directory_id_idx")
+    @@index([folder_id], map: "chat_folder_id_idx")
     @@map("chats")
 }
 

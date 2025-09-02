@@ -41,7 +41,7 @@ export class ChatService {
       name: data.name,
       path: contextPath,
       root_chat_id: rootChatId,
-      directory_id: data.directory_id,
+      folder_id: data.folder_id,
       parent_chat_id: data.branch_context?.parent_chat_id,
     });
 
@@ -61,12 +61,12 @@ export class ChatService {
   }
 
   getUserNonArchivedChats(userId: string, queryParams: GetChatQueryDto): Promise<GetUserNonArchivedChatsOutput[]> {
-    // parent_chat_id and parent_directory_id are self excluding. There can be one or none of them
+    // parent_chat_id and parent_folder_id are self excluding. There can be one or none of them
     return this.chatRepository.getChatsBy({
       user_id: userId,
       is_deleted: false,
       parent_chat_id: queryParams.parent_chat_id || null,
-      directory_id: queryParams.parent_directory_id || null,
+      folder_id: queryParams.parent_folder_id || null,
     });
   }
 

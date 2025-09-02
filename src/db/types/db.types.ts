@@ -1,5 +1,5 @@
 // Auto-generated CRUD types for Kysely
-// Generated at 2025-08-30T08:56:49.339Z
+// Generated at 2025-09-02T04:29:35.732Z
 
 import type { ColumnType, Generated, Selectable, Insertable, Updateable } from 'kysely';
 
@@ -17,11 +17,6 @@ export enum ConnectionType {
 export enum ContextType {
   FULL_MESSAGE = 'full_message',
   TEXT_SELECTION = 'text_selection',
-}
-
-export enum DirectoryType {
-  FOLDER = 'folder',
-  MINDLET = 'mindlet',
 }
 
 export enum FileStatus {
@@ -47,7 +42,7 @@ type ChatTable = {
   parent_chat_id: string | null;
   user_id: string;
   root_chat_id: string | null;
-  directory_id: string | null;
+  folder_id: string | null;
   name: string;
   depth: Generated<number>;
   created_at: ColumnType<Date, Date | string | undefined, Date | string>;
@@ -104,24 +99,6 @@ export type BranchContextGetOutput = Selectable<BranchContextTable>;
 export type BranchContextCreateInput = Insertable<BranchContextTable>;
 export type BranchContextUpdateInput = Updateable<BranchContextTable>;
 
-type DirectoryTable = {
-  id: Generated<string>;
-  root_directory_id: string | null;
-  parent_directory_id: string | null;
-  user_id: string;
-  name: string;
-  depth: Generated<number>;
-  created_at: ColumnType<Date, Date | string | undefined, Date | string>;
-  updated_at: ColumnType<Date, Date | string | undefined, Date | string>;
-  is_deleted: Generated<boolean>;
-  deleted_at: ColumnType<Date, Date | string | undefined, Date | string>;
-  type: DirectoryType;
-  path: string[];
-};
-export type DirectoryGetOutput = Selectable<DirectoryTable>;
-export type DirectoryCreateInput = Insertable<DirectoryTable>;
-export type DirectoryUpdateInput = Updateable<DirectoryTable>;
-
 type FileTable = {
   id: Generated<string>;
   bucket: string;
@@ -150,6 +127,23 @@ export type FileBindingGetOutput = Selectable<FileBindingTable>;
 export type FileBindingCreateInput = Insertable<FileBindingTable>;
 export type FileBindingUpdateInput = Updateable<FileBindingTable>;
 
+type FolderTable = {
+  id: Generated<string>;
+  root_folder_id: string | null;
+  parent_folder_id: string | null;
+  user_id: string;
+  name: string;
+  depth: Generated<number>;
+  created_at: ColumnType<Date, Date | string | undefined, Date | string>;
+  updated_at: ColumnType<Date, Date | string | undefined, Date | string>;
+  is_deleted: Generated<boolean>;
+  deleted_at: ColumnType<Date, Date | string | undefined, Date | string>;
+  path: string[];
+};
+export type FolderGetOutput = Selectable<FolderTable>;
+export type FolderCreateInput = Insertable<FolderTable>;
+export type FolderUpdateInput = Updateable<FolderTable>;
+
 type UserTable = {
   id: Generated<string>;
   email: string;
@@ -171,8 +165,8 @@ export type DB = {
   messages: MessageTable;
   message_replies: MessageReplyTable;
   branch_contexts: BranchContextTable;
-  directories: DirectoryTable;
   files: FileTable;
   file_bindings: FileBindingTable;
+  folders: FolderTable;
   users: UserTable;
 };

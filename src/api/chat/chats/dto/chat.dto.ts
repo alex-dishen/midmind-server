@@ -3,7 +3,7 @@ import { IsOptional, IsUUID } from 'class-validator';
 export class GetChatQueryDto {
   @IsUUID()
   @IsOptional()
-  parent_directory_id?: string;
+  parent_folder_id?: string;
 
   @IsUUID()
   @IsOptional()
@@ -31,5 +31,5 @@ export class ChatDto {
   name: string;
   has_children: boolean;
   parent_chat_id: string | null;
-  parent_directory_id: string | null;
+  parent_folder_id: string | null;
 }

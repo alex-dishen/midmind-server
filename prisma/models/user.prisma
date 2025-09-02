@@ -16,7 +16,7 @@ model User {
 
     chats          Chat[]
     messages       Message[]
-    directories    Directory[]
+    folders        Folder[]
     uploaded_files File[]
 
     @@map("users")

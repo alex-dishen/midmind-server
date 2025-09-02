@@ -8,5 +8,5 @@ export class UpdateChatDto {
   @ValidateIf((_, value) => value !== null) // skip UUID check when explicitly null
   @IsUUID('4', { message: "target_parent_id must be a valid UUID or null or shouldn't be passed at all" })
   @IsOptional()
-  directory_id?: string | null;
+  folder_id?: string | null;
 }

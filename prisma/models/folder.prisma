@@ -1,0 +1,24 @@
+model Folder {
+    id               String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    root_folder_id   String? @db.Uuid
+    parent_folder_id String? @db.Uuid
+    user_id          String  @db.Uuid
+
+    name       String
+    depth      Int       @default(0)
+    created_at DateTime  @default(now())
+    updated_at DateTime?
+    is_deleted Boolean   @default(false)
+    deleted_at DateTime?
+    path       String[] //  JSON array of folder IDs from root to current folder: ["root_id", "child1_id", "current_id"]
+
+    chats             Chat[]
+    user              User     @relation(fields: [user_id], references: [id])
+    rootFolder        Folder?  @relation("RootFolderRelation", fields: [root_folder_id], references: [id])
+    descendantFolders Folder[] @relation("RootFolderRelation")
+    parentFolder      Folder?  @relation("FolderHierarchy", fields: [parent_folder_id], references: [id])
+    childFolders      Folder[] @relation("FolderHierarchy")
+
+    @@index([user_id], map: "folder_user_id_idx")
+    @@map("folders")
+}

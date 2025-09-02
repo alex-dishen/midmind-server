@@ -7,7 +7,7 @@ export class ChatDtoMapper {
       id: chat.id,
       name: chat.name,
       has_children: chat.has_children,
-      parent_directory_id: chat.directory_id,
+      parent_folder_id: chat.folder_id,
       parent_chat_id: chat.parent_chat_id,
     }));
   }

@@ -1,17 +1,15 @@
 import { IsOptional, IsUUID } from 'class-validator';
-import { DirectoryType } from 'src/db/types/db.types';
 
-export class GetDirectoryQueryDto {
+export class GetFolderQueryDto {
   @IsUUID()
   @IsOptional()
   parent_id?: string;
 }
 
-export class GetDirectoryDto {
+export class GetFolderDto {
   @IsUUID()
   id: string;
 
   name: string;
-  type: DirectoryType;
   has_children: boolean;
 }

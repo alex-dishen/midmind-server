@@ -16,8 +16,8 @@ export class ChatRepository {
     await this.kysely.db.updateTable('chats').set(data).where('id', '=', chatId).execute();
   }
 
-  async updateChatsByDirectoryIds(directoryIds: string[], data: ChatUpdateInput): Promise<void> {
-    await this.kysely.db.updateTable('chats').set(data).where('directory_id', 'in', directoryIds).execute();
+  async updateChatsByFolderIds(folderIds: string[], data: ChatUpdateInput): Promise<void> {
+    await this.kysely.db.updateTable('chats').set(data).where('folder_id', 'in', folderIds).execute();
   }
 
   async updateChatsByPathChatId(chatId: string, data: ChatUpdateInput): Promise<void> {
@@ -43,7 +43,7 @@ export class ChatRepository {
       .select([
         'id',
         'name',
-        'directory_id',
+        'folder_id',
         'parent_chat_id',
         sql<boolean>`EXISTS (SELECT 1 FROM chats c2 WHERE c2.parent_chat_id = chats.id)`.as('has_children'),
       ])

@@ -1,9 +1,6 @@
-import { DirectoryType } from 'src/db/types/db.types';
-
-export type GetChatBreadcrumbsDirectoryT = {
+export type GetChatBreadcrumbsFolderT = {
   id: string;
   name: string;
-  type: DirectoryType;
 };
 
 export type GetChatBreadcrumbsOutput = {
@@ -12,5 +9,5 @@ export type GetChatBreadcrumbsOutput = {
     name: string;
     parent_chat_id: string | null;
   }[];
-  directories: GetChatBreadcrumbsDirectoryT[];
+  folders: GetChatBreadcrumbsFolderT[];
 };

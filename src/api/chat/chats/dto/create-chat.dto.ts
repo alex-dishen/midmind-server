@@ -36,7 +36,7 @@ export class CreateChatDto {
 
   @IsUUID()
   @IsOptional()
-  directory_id?: string;
+  folder_id?: string;
 
   @IsOptional()
   branch_context?: CreateChatBranchContext;
