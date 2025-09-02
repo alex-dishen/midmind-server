@@ -4,15 +4,15 @@ import { UpdateChatDto } from './dto/update-chat.dto';
 import { GetChatByIdOutput, GetUserNonArchivedChatsOutput } from './types/chat.service.types';
 import { GetChatQueryDto } from './dto/chat.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
-import { BranchContextRepository } from '../branch-contexts/branch-context.repository';
 import { Transaction } from 'src/db/transactions/transaction.decorator';
 import { generateRandomPastelHexColor } from 'src/shared/utils/generate-random-hex';
+import { ChatMetadataRepository } from '../chat-meatadata/chat-meatadata.repository';
 
 @Injectable()
 export class ChatService {
   constructor(
     private chatRepository: ChatRepository,
-    private branchContextRepository: BranchContextRepository,
+    private chatMetadataRepository: ChatMetadataRepository,
   ) {}
 
   @Transaction()
@@ -21,14 +21,14 @@ export class ChatService {
     let rootChatId: string | undefined;
     let contextPath: string[] = [data.id];
 
-    // A conversation was initialized in a branch
-    if (data.branch_context) {
-      const parentChat = await this.chatRepository.getChatById(data.branch_context.parent_chat_id);
+    // A conversation was initialized in a nested chat
+    if (data.chat_metadata) {
+      const parentChat = await this.chatRepository.getChatById(data.chat_metadata.parent_chat_id);
 
       if (parentChat) {
         depth = parentChat.depth + 1;
         // parentChat may not have root_chat_id as parent might be the root itself
-        rootChatId = parentChat.root_chat_id || data.branch_context.parent_chat_id;
+        rootChatId = parentChat.root_chat_id || data.chat_metadata.parent_chat_id;
         // parentChat.path = ['root_id', 'parent_chat_id']
         contextPath = [...parentChat.path, data.id];
       }
@@ -42,20 +42,20 @@ export class ChatService {
       path: contextPath,
       root_chat_id: rootChatId,
       folder_id: data.folder_id,
-      parent_chat_id: data.branch_context?.parent_chat_id,
+      parent_chat_id: data.chat_metadata?.parent_chat_id,
     });
 
-    if (data.branch_context) {
-      await this.branchContextRepository.createBranchContext({
+    if (data.chat_metadata) {
+      await this.chatMetadataRepository.createChatMetadata({
         child_chat_id: data.id,
-        context_type: data.branch_context?.context_type,
-        end_position: data.branch_context?.end_position,
+        context_type: data.chat_metadata?.context_type,
+        end_position: data.chat_metadata?.end_position,
         connection_color: generateRandomPastelHexColor(),
-        selected_text: data.branch_context?.selected_text,
-        parent_chat_id: data.branch_context?.parent_chat_id,
-        start_position: data.branch_context?.start_position,
-        connection_type: data.branch_context?.connection_type,
-        parent_message_id: data.branch_context?.parent_message_id,
+        selected_text: data.chat_metadata?.selected_text,
+        parent_chat_id: data.chat_metadata?.parent_chat_id,
+        start_position: data.chat_metadata?.start_position,
+        connection_type: data.chat_metadata?.connection_type,
+        parent_message_id: data.chat_metadata?.parent_message_id,
       });
     }
   }
@@ -71,7 +71,7 @@ export class ChatService {
   }
 
   getChatById(chatId: string): Promise<GetChatByIdOutput | undefined> {
-    return this.chatRepository.getChatWithBranchContext(chatId);
+    return this.chatRepository.getChatWithChatMetadata(chatId);
   }
 
   async updateChat(chatId: string, data: UpdateChatDto): Promise<void> {

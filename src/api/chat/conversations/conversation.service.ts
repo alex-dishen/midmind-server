@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GeminiService } from 'src/llm/gemini/gemini.service';
 import { MessageRepository } from '../messages/message.repository';
-import { BranchContextRepository } from '../branch-contexts/branch-context.repository';
 import { FileBindingType, MessageSenderRole } from 'src/db/types/db.types';
 import { ConversationResponseType } from './dto/create-conversation.dto';
 import {
@@ -18,6 +17,7 @@ import { ConversationRepository } from './conversation.repository';
 import { titlePrompt } from 'src/llm/prompts/title';
 import { MessageReplyRepository } from '../messages/message-reply.repository';
 import { FileBindingsRepository } from 'src/api/file/file-bindings/file-bindings.repository';
+import { ChatMetadataRepository } from '../chat-meatadata/chat-meatadata.repository';
 
 @Injectable()
 export class ConversationService {
@@ -28,7 +28,7 @@ export class ConversationService {
     private messageReplyRepository: MessageReplyRepository,
     private conversationRepository: ConversationRepository,
     private fileBindingsRepository: FileBindingsRepository,
-    private branchContextRepository: BranchContextRepository,
+    private chatMetadataRepository: ChatMetadataRepository,
   ) {}
 
   private async generateAIPrompt({ userInput, chatId, replyTo }: GenerateAIPromptInput): Promise<GetAIContextOutput[] | string> {
@@ -103,7 +103,7 @@ export class ConversationService {
       role: MessageSenderRole.USER,
       // Date is passed because messages are in transaction and they are flushed at the same time. Ruins messages order
       created_at: new Date().toISOString(),
-      parent_message_id: data.branch_context?.parent_message_id,
+      parent_message_id: data.chat_metadata?.parent_message_id,
     });
 
     await this.messageRepository.createMessage({
@@ -134,8 +134,8 @@ export class ConversationService {
       await this.fileBindingsRepository.createBinding(bindings);
     }
 
-    if (data.branch_context) {
-      await this.branchContextRepository.updateBranchContextByChildChatId(data.chat_id, { child_message_id: data.message_id });
+    if (data.chat_metadata) {
+      await this.chatMetadataRepository.updateChatMetadataByChildChatId(data.chat_id, { child_message_id: data.message_id });
     }
   }
 

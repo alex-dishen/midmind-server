@@ -1,7 +1,7 @@
 import { IsUUID } from 'class-validator';
 import { ContextType, MessageSenderRole } from 'src/db/types/db.types';
 
-class AppMessageBranchDto {
+class AppMessageNestedChatDto {
   @IsUUID()
   id: string;
 
@@ -31,6 +31,6 @@ export class AppMessageDto {
   role: MessageSenderRole;
   llm_model: string | null;
   reply_content: string | null;
-  branches: AppMessageBranchDto[];
+  nested_chats: AppMessageNestedChatDto[];
   attachments: AppMessageAttachmentDto[];
 }

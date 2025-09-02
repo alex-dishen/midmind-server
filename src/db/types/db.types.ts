@@ -1,5 +1,5 @@
 // Auto-generated CRUD types for Kysely
-// Generated at 2025-09-02T04:29:35.732Z
+// Generated at 2025-09-02T05:09:39.292Z
 
 import type { ColumnType, Generated, Selectable, Insertable, Updateable } from 'kysely';
 
@@ -81,7 +81,7 @@ export type MessageReplyGetOutput = Selectable<MessageReplyTable>;
 export type MessageReplyCreateInput = Insertable<MessageReplyTable>;
 export type MessageReplyUpdateInput = Updateable<MessageReplyTable>;
 
-type BranchContextTable = {
+type ChatMetadataTable = {
   id: Generated<string>;
   child_chat_id: string;
   parent_chat_id: string;
@@ -95,9 +95,9 @@ type BranchContextTable = {
   connection_type: ConnectionType;
   connection_color: string;
 };
-export type BranchContextGetOutput = Selectable<BranchContextTable>;
-export type BranchContextCreateInput = Insertable<BranchContextTable>;
-export type BranchContextUpdateInput = Updateable<BranchContextTable>;
+export type ChatMetadataGetOutput = Selectable<ChatMetadataTable>;
+export type ChatMetadataCreateInput = Insertable<ChatMetadataTable>;
+export type ChatMetadataUpdateInput = Updateable<ChatMetadataTable>;
 
 type FileTable = {
   id: Generated<string>;
@@ -164,7 +164,7 @@ export type DB = {
   chats: ChatTable;
   messages: MessageTable;
   message_replies: MessageReplyTable;
-  branch_contexts: BranchContextTable;
+  chat_metadata: ChatMetadataTable;
   files: FileTable;
   file_bindings: FileBindingTable;
   folders: FolderTable;

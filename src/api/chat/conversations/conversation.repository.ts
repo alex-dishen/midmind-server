@@ -23,7 +23,7 @@ export class ConversationRepository {
 
     const descendantChats = await this.kysely.db
       .selectFrom('chats as c')
-      .leftJoin('branch_contexts as bc', 'bc.child_chat_id', 'c.id')
+      .leftJoin('chat_metadata as bc', 'bc.child_chat_id', 'c.id')
       .select(['c.id'])
       .where(sql<boolean>`${chatId} = ANY(c.path)`)
       .where('bc.connection_type', '=', ConnectionType.ATTACHED)
@@ -50,8 +50,8 @@ export class ConversationRepository {
       const childIds = edges.map(e => e.child);
 
       if (childIds.length) {
-        const branchRows = (await this.kysely.db
-          .selectFrom('branch_contexts as bc')
+        const nestedChatRows = (await this.kysely.db
+          .selectFrom('chat_metadata as bc')
           .leftJoin('messages as pm', 'pm.id', 'bc.parent_message_id')
           .select([
             'bc.parent_chat_id as parent_chat_id',
@@ -61,7 +61,7 @@ export class ConversationRepository {
           .where('bc.child_chat_id', 'in', childIds)
           .execute()) as { parent_chat_id: string; child_chat_id: string; parent_message_created_at: Date | null }[];
 
-        for (const row of branchRows) {
+        for (const row of nestedChatRows) {
           if (row.parent_message_created_at) {
             cutoffByAncestor.set(row.parent_chat_id, row.parent_message_created_at);
           }
@@ -95,8 +95,8 @@ export class ConversationRepository {
         .orderBy('created_at', 'asc')
         .execute();
 
-      const branchContexts = await this.kysely.db
-        .selectFrom('branch_contexts')
+      const chatMetadata = await this.kysely.db
+        .selectFrom('chat_metadata')
         .select(['child_chat_id', 'parent_chat_id', 'parent_message_id', 'created_at'])
         .where('child_chat_id', 'in', descendantChatIds)
         .orderBy('created_at', 'asc')
@@ -114,10 +114,10 @@ export class ConversationRepository {
 
       const childrenByParentMessage = new Map<string, string[]>();
 
-      for (const context of branchContexts) {
-        const arr = childrenByParentMessage.get(context.parent_message_id) ?? [];
-        arr.push(context.child_chat_id);
-        childrenByParentMessage.set(context.parent_message_id, arr);
+      for (const metadata of chatMetadata) {
+        const arr = childrenByParentMessage.get(metadata.parent_message_id) ?? [];
+        arr.push(metadata.child_chat_id);
+        childrenByParentMessage.set(metadata.parent_message_id, arr);
       }
 
       const injectChildChats = (parentMessageId: string) => {

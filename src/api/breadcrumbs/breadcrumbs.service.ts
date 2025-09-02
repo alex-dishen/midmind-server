@@ -17,8 +17,8 @@ export class BreadcrumbsService {
 
     const chats = await this.breadcrumbsRepository.getChatsByIds(chatData.path);
 
-    // chatData.folder_id means it's a root, but if it doesn't have it it's folder_id it's either a branch or doesn't have a folder.
-    // chats[0].folder suspects we are in the branch and we check if the root is in a folder
+    // chatData.folder_id means it's a root, but if it doesn't have it it's folder_id it's either a nested chat or doesn't have a folder.
+    // chats[0].folder suspects we are in the nested chat and we check if the root is in a folder
     const folderId = chatData.folder_id || chats[0].folder_id;
 
     if (folderId) {

@@ -31,15 +31,15 @@ model Chat {
     position_x Float     @default(0)
     path       String[] //  JSON array of chat IDs from root to current chat: ["root_id", "child1_id", "current_id"]
 
-    user                User            @relation(fields: [user_id], references: [id])
-    folder              Folder?         @relation(fields: [folder_id], references: [id])
-    rootChat            Chat?           @relation("RootChatRelation", fields: [root_chat_id], references: [id])
-    descendantChats     Chat[]          @relation("RootChatRelation")
-    parentChat          Chat?           @relation("ChatHierarchy", fields: [parent_chat_id], references: [id])
-    childrenChats       Chat[]          @relation("ChatHierarchy")
-    messages            Message[]
-    childBranchContext  BranchContext?  @relation("ChildBranchContext")
-    parentBranchContext BranchContext[] @relation("ParentBranchContext")
+    user               User           @relation(fields: [user_id], references: [id])
+    folder             Folder?        @relation(fields: [folder_id], references: [id])
+    rootChat           Chat?          @relation("RootChatRelation", fields: [root_chat_id], references: [id])
+    descendantChats    Chat[]         @relation("RootChatRelation")
+    parentChat         Chat?          @relation("ChatHierarchy", fields: [parent_chat_id], references: [id])
+    childrenChats      Chat[]         @relation("ChatHierarchy")
+    messages           Message[]
+    childChatMetadata  ChatMetadata?  @relation("ChildChatMetadata")
+    parentChatMetadata ChatMetadata[] @relation("ParentChatMetadata")
 
     @@index([user_id], map: "chat_user_id_idx")
     @@index([folder_id], map: "chat_folder_id_idx")
@@ -57,14 +57,14 @@ model Message {
     role       MessageSenderRole
     created_at DateTime          @default(now())
 
-    user                User?           @relation(fields: [user_id], references: [id])
-    chat                Chat            @relation(fields: [chat_id], references: [id])
-    parentMessage       Message?        @relation("MessageHierarchy", fields: [parent_message_id], references: [id])
-    childMessages       Message[]       @relation("MessageHierarchy")
-    childBranchContext  BranchContext?  @relation("ChildMessageContext")
-    parentBranchContext BranchContext[] @relation("ParentMessageContext")
-    messagesWithReply   MessageReply[]  @relation("MessageWithReply")
-    messagesRepliedTo   MessageReply[]  @relation("MessageRepliedTo")
+    user               User?          @relation(fields: [user_id], references: [id])
+    chat               Chat           @relation(fields: [chat_id], references: [id])
+    parentMessage      Message?       @relation("MessageHierarchy", fields: [parent_message_id], references: [id])
+    childMessages      Message[]      @relation("MessageHierarchy")
+    childChatMetadata  ChatMetadata?  @relation("ChildMessageContext")
+    parentChatMetadata ChatMetadata[] @relation("ParentMessageContext")
+    messagesWithReply  MessageReply[] @relation("MessageWithReply")
+    messagesRepliedTo  MessageReply[] @relation("MessageRepliedTo")
 
     @@index([chat_id], map: "message_chat_id_idx")
     @@map("messages")
@@ -84,25 +84,25 @@ model MessageReply {
     @@map("message_replies")
 }
 
-model BranchContext {
+model ChatMetadata {
     id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     child_chat_id     String  @unique @db.Uuid
     parent_chat_id    String  @db.Uuid
     parent_message_id String  @db.Uuid
     child_message_id  String? @unique @db.Uuid // Can be null when a chat created but the first message wasn't sent yet
 
-    selected_text    String? // Can be null when full message was used to create a branch
-    start_position   Int? // Can be null when full message was used to create a branch
-    end_position     Int? // Can be null when full message was used to create a branch
+    selected_text    String? // Can be null when full message was used to create a nested chat
+    start_position   Int? // Can be null when full message was used to create a nested chat
+    end_position     Int? // Can be null when full message was used to create a nested chat
     created_at       DateTime       @default(now())
     context_type     ContextType
     connection_type  ConnectionType
     connection_color String
 
-    childChat     Chat     @relation("ChildBranchContext", fields: [child_chat_id], references: [id])
-    parentChat    Chat     @relation("ParentBranchContext", fields: [parent_chat_id], references: [id])
+    childChat     Chat     @relation("ChildChatMetadata", fields: [child_chat_id], references: [id])
+    parentChat    Chat     @relation("ParentChatMetadata", fields: [parent_chat_id], references: [id])
     childMessage  Message? @relation("ChildMessageContext", fields: [child_message_id], references: [id])
     parentMessage Message  @relation("ParentMessageContext", fields: [parent_message_id], references: [id])
 
-    @@map("branch_contexts")
+    @@map("chat-metadata")
 }

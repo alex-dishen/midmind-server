@@ -4,7 +4,7 @@ export enum BreadcrumbType {
   FOLDER = 'folder',
   MINDLET = 'mindlet',
   CHAT = 'chat',
-  BRANCH = 'branch',
+  NESTED_CHAT = 'nested_chat',
 }
 
 export class ChatBreadcrumbsDto {

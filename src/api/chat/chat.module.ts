@@ -6,18 +6,18 @@ import { ChatRepository } from 'src/api/chat/chats/chat.repository';
 import { MessageService } from 'src/api/chat/messages/message.service';
 import { MessageController } from 'src/api/chat/messages/message.controller';
 import { MessageRepository } from 'src/api/chat/messages/message.repository';
-import { BranchContextRepository } from './branch-contexts/branch-context.repository';
 import { ConversationController } from './conversations/conversation.controller';
 import { ConversationService } from './conversations/conversation.service';
-import { BranchContextController } from './branch-contexts/branch-context.controller';
-import { BranchContextService } from './branch-contexts/branch-context.service';
 import { ConversationRepository } from './conversations/conversation.repository';
 import { MessageReplyRepository } from './messages/message-reply.repository';
 import { FileModule } from '../file/file.module';
+import { ChatMetadataController } from './chat-meatadata/chat-meatadata.controller';
+import { ChatMetadataRepository } from './chat-meatadata/chat-meatadata.repository';
+import { ChatMetadataService } from './chat-meatadata/chat-meatadata.service';
 
 @Module({
   imports: [LLMModule, FileModule],
-  controllers: [ConversationController, ChatController, MessageController, BranchContextController],
+  controllers: [ConversationController, ChatController, MessageController, ChatMetadataController],
   providers: [
     ConversationService,
     ConversationRepository,
@@ -29,8 +29,8 @@ import { FileModule } from '../file/file.module';
     MessageReplyRepository,
     MessageService,
 
-    BranchContextRepository,
-    BranchContextService,
+    ChatMetadataRepository,
+    ChatMetadataService,
   ],
   exports: [ChatRepository],
 })

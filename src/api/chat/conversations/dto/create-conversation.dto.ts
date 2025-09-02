@@ -9,7 +9,7 @@ export enum ConversationResponseType {
   COMPLETE = 'complete',
 }
 
-class ConversationBranchContextDto {
+class ConversationChatMetadataDto {
   @IsUUID()
   parent_message_id: string;
 }
@@ -47,7 +47,7 @@ export class CreateConversationDto {
   reply_to?: ReplyToDto;
 
   @IsOptional()
-  branch_context?: ConversationBranchContextDto;
+  chat_metadata?: ConversationChatMetadataDto;
 }
 
 export class CreateConversationResponseCompleteDto {

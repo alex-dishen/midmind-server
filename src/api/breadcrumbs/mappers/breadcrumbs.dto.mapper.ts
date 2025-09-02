@@ -6,7 +6,7 @@ export class BreadcrumbsDtoMapper {
     const mappedChats: ChatBreadcrumbsDto[] = chats.map(c => ({
       id: c.id,
       name: c.name,
-      type: c.parent_chat_id ? BreadcrumbType.BRANCH : BreadcrumbType.CHAT,
+      type: c.parent_chat_id ? BreadcrumbType.NESTED_CHAT : BreadcrumbType.CHAT,
     }));
 
     const mappedFolders: ChatBreadcrumbsDto[] = folders.map(d => ({

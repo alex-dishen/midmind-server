@@ -1,7 +1,7 @@
 import { IsEnum, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ConnectionType, ContextType } from 'src/db/types/db.types';
 
-class CreateChatBranchContext {
+class CreateChatChatMetadata {
   @IsUUID()
   parent_chat_id: string;
 
@@ -39,5 +39,5 @@ export class CreateChatDto {
   folder_id?: string;
 
   @IsOptional()
-  branch_context?: CreateChatBranchContext;
+  chat_metadata?: CreateChatChatMetadata;
 }

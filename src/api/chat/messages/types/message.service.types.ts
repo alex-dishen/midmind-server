@@ -7,7 +7,7 @@ export type GetChatMessagesOutput = {
   role: MessageSenderRole;
   llm_model: string | null;
   reply_content: string | null;
-  branches: {
+  nested_chats: {
     id: string;
     child_chat_id: string;
     connection_color: string;

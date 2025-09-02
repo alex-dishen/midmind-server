@@ -1,7 +1,7 @@
 import { IsUUID } from 'class-validator';
 import { ContextType } from 'src/db/types/db.types';
 
-export class BranchContextByMessageIdDto {
+export class ChatMetadataByMessageIdDto {
   @IsUUID()
   id: string;
   @IsUUID()

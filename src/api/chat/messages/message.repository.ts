@@ -49,7 +49,7 @@ export class MessageRepository {
 
         jsonArrayFrom(
           eb
-            .selectFrom('branch_contexts as tc')
+            .selectFrom('chat_metadata as tc')
             .select([
               'tc.id',
               'tc.context_type',
@@ -61,7 +61,7 @@ export class MessageRepository {
             ])
             .whereRef('m.id', '=', 'tc.parent_message_id')
             .orderBy('created_at'),
-        ).as('branches'),
+        ).as('nested_chats'),
       ])
       .where('chat_id', '=', chatId)
       .orderBy('created_at', 'desc');
