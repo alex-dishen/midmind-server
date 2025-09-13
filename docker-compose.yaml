@@ -12,12 +12,6 @@ services:
       - '55001:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    command: >
-      postgres -c log_statement=all
-               -c log_connections=on
-               -c log_disconnections=on
-               -c log_hostname=on
-               -c log_line_prefix='%t [%p] [%d] [%u] [%h] '
 
   redis:
     image: redis:8.0
@@ -27,7 +21,6 @@ services:
       - '6379:6379'
     volumes:
       - redis-data:/var/redis/data
-    command: redis-server --loglevel notice --logfile ""
 
 volumes:
   postgres_data:

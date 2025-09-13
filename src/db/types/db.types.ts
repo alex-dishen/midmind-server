@@ -1,5 +1,5 @@
 // Auto-generated CRUD types for Kysely
-// Generated at 2025-09-05T16:21:37.305Z
+// Generated at 2025-09-13T05:59:31.541Z
 
 import type { ColumnType, Generated, Selectable, Insertable, Updateable } from 'kysely';
 

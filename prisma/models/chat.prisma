@@ -104,5 +104,5 @@ model ChatMetadata {
     childMessage  Message? @relation("ChildMessageContext", fields: [child_message_id], references: [id])
     parentMessage Message  @relation("ParentMessageContext", fields: [parent_message_id], references: [id])
 
-    @@map("chat-metadata")
+    @@map("chat_metadata")
 }
